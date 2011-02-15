@@ -56,7 +56,7 @@ public class Extent {
     public String _minTime = null;
     public String _maxTime = null;
     public String _timeUnits = null;
-    public Double _timeRes = null;
+    public String _timeRes = null;
     
     /** 
      * Class constructor.

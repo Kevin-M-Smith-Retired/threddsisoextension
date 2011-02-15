@@ -36,9 +36,11 @@ import thredds.server.metadata.bean.NetCDFAttributes;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.dom4j.Node;
 import org.jdom.Element;
 import org.jdom.Attribute;
 import org.jdom.Namespace;
+import org.w3c.dom.NamedNodeMap;
 
 /**
 * NCMLModifier
@@ -48,7 +50,8 @@ import org.jdom.Namespace;
 public class NCMLModifier {
 
 	private Hashtable<String, NetCDFAttribute> _netCDFAttHt = null;	
-
+    private String _openDapService = null;
+    
    /** 
 	* Class constructor.
 	*/ 	
@@ -165,7 +168,23 @@ public class NCMLModifier {
         	    	 break;         	    	 
         	   }
            }
-		}
+
+
+		} //End for loop
+        
+        // Add opendap service reference
+        if (_openDapService!=null) addElem(rootElem,"thredds_opendap_service", _openDapService);
+
+        // Update location attribute for security purposes       
+        Attribute locAttr = rootElem.getAttribute("location");
+   	    //String locStr = locAttr.getValue();
+   	    //int startPos = locStr.lastIndexOf("/") + 1;
+   	    //String modLocStr = locStr.substring(startPos, locStr.length());
+   	    locAttr.setValue(_openDapService);
+	}
+	
+	public void setOpenDapService(String openDapService) {
+		_openDapService = openDapService;
 	}
 	
 	private Element newAttributeElement() {

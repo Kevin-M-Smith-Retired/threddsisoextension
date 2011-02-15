@@ -65,7 +65,7 @@ public class DatasetHandlerAdapter {
 		if (datasetPath == null) { // passing in a dataset URL, presumably
 			// opendap
 			datasetPath = ServletUtil.getParameterIgnoreCase(req, "dataset");
-			_log.debug("opendap datasetPath: " + datasetPath);
+			_log.info("opendap datasetPath: " + datasetPath);
 			try {
 				dataset = NetcdfDataset.openDataset(datasetPath);
 			} catch (IOException e) {
@@ -78,7 +78,7 @@ public class DatasetHandlerAdapter {
 				netcdfFile = DatasetHandler
 						.getNetcdfFile(req, res, datasetPath);
 
-				_log.debug("netcdfFile location: " + netcdfFile.getLocation());
+				_log.info("datasetPath: " + datasetPath + " netcdfFile location: " + netcdfFile.getLocation());
 				dataset = new NetcdfDataset(netcdfFile);
 			} catch (IOException e) {
 				_log.error("Failed to open dataset <" + datasetPath + ">: "
@@ -92,7 +92,7 @@ public class DatasetHandlerAdapter {
 	/** 
 	* Close a NetcdfDataset.
 	* 
-	* @param dataste the NetcdfDataset to close 
+	* @param dataset the NetcdfDataset to close 
 	*/	
 	public static void closeDataset(final NetcdfDataset dataset) {
 		if (dataset == null)
