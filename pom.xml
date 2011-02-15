@@ -4,7 +4,7 @@
   <groupId>EDS</groupId>
   <artifactId>threddsIso</artifactId>
   <packaging>jar</packaging>
-  <version>1.0</version>
+  <version>1.1</version>
   <repositories>
     <repository>
         <id>localdrive</id>
@@ -13,7 +13,6 @@
     </repository>      	
   </repositories>   
 
-   
   <dependencies>
   	<dependency>
   		<groupId>junit</groupId>
@@ -38,17 +37,29 @@
   		<artifactId>webmvc</artifactId>
   		<version>2.5.6</version>
   		<scope>provided</scope>
+  	</dependency> 
+  	<dependency>
+  		<groupId>org.springframework</groupId>
+  		<artifactId>spring-test</artifactId>
+  		<version>2.5.6</version>
+  		<scope>provided</scope>
   	</dependency>  
   	<dependency>
   		<groupId>edu.ucar</groupId>
   		<artifactId>netcdf</artifactId>
-  		<version>4.1.1</version>
+  		<version>4.2</version>
   		<scope>provided</scope>
   	</dependency>  	
   	<dependency>
+  		<groupId>edu.ucar</groupId>
+  		<artifactId>thredds</artifactId>
+  		<version>4.2</version>
+  		<scope>provided</scope>
+  	</dependency>   	
+  	<dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
-        <version>1.2.14</version>
+        <version>1.2.15</version>
 		<scope>provided</scope>            
     </dependency>  	
   	<dependency>
@@ -57,18 +68,21 @@
   		<version>1.1.1</version>
   		<scope>provided</scope>
   	</dependency>    	
-	<dependency>  	
-		<groupId>edu.ucar.unidata.dependencies</groupId>
-		<artifactId>slf4j-api</artifactId>
-		<version>1.5.6</version>
-		<scope>provided</scope>
-	</dependency>
+
 	<dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>2.3</version>
 		<scope>provided</scope>
     </dependency>	 
+      	<dependency>  	
+		<groupId>org.jdom</groupId>
+		<artifactId>jdom</artifactId>
+		<version>1.1</version>
+		<scope>provided</scope>
+	</dependency>
+    <!-- The most recent xslts are much smaller meaning that Xalan 2.7.1 is not currently needed  
+         However, allowing for flexibility that they may grow in size again we leave them in for now. -->  
     <dependency>
         <groupId>org.xalan</groupId>
         <artifactId>serializer</artifactId>
@@ -80,26 +94,34 @@
         <artifactId>xalan</artifactId>
         <version>2.7.1</version>
 		<scope>compile</scope>            
-    </dependency>			
+    </dependency> 
 	<dependency>
 		<groupId>jaxen</groupId>
 		<artifactId>jaxen</artifactId>
 		<version>1.1.1</version>
 		<type>jar</type>
-		<scope>runtime</scope>
+		<scope>provided</scope>
 	</dependency>		
+  	
+	<dependency>  	
+		<groupId>edu.ucar.unidata.dependencies</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>1.5.6</version>
+		<scope>provided</scope>
+	</dependency> 
   	<dependency>  	
 		<groupId>edu.ucar.unidata.dependencies</groupId>
 		<artifactId>slf4j-jdk14</artifactId>
 		<version>1.5.6</version>
-		<scope>runtime</scope>
+		<scope>provided</scope>
 	</dependency>
   	<dependency>  	
 		<groupId>edu.ucar.unidata.dependencies</groupId>
 		<artifactId>httpclient</artifactId>
 		<version>3.1</version>
-		<scope>runtime</scope>
+		<scope>provided</scope>
 	</dependency> 		 		
+	
   </dependencies> 
   <profiles>
     <profile>
@@ -134,7 +156,7 @@
   </profiles>        
   <build>
     <plugins>
-    
+      <!-- Not needed everything is provided 
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -152,7 +174,7 @@
           </execution>
         </executions>
       </plugin>
-    
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>

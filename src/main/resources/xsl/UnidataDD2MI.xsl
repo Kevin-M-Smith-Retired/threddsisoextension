@@ -5,12 +5,12 @@
   xmlns:nc="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
   <xd:doc xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" scope="stylesheet">
     <xd:desc>
-      <xd:p><xd:b>Created on:</xd:b>February 4, 2011</xd:p>
+      <xd:p><xd:b>Created on:</xd:b>February 10, 2011</xd:p>
       <xd:p><xd:b>Author:</xd:b>ted.habermann@noaa.gov</xd:p>
       <xd:p/>
     </xd:desc>
   </xd:doc>
-  <xsl:variable name="stylesheetVersion" select="'2.0.3'"/>
+  <xsl:variable name="stylesheetVersion" select="'2.0.4'"/>
   <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
   <xsl:variable name="globalAttributeCnt" select="count(/nc:netcdf/nc:attribute)"/>
   <xsl:variable name="variableCnt" select="count(/nc:netcdf/nc:variable)"/>
@@ -22,7 +22,6 @@
   <xsl:variable name="identifierNameSpaceCnt" select="count(/nc:netcdf/nc:attribute[@name='naming_authority'])"/>
   <xsl:variable name="metadataConventionCnt" select="count(/nc:netcdf/nc:attribute[@name='Metadata_Conventions'])"/>
   <xsl:variable name="metadataLinkCnt" select="count(/nc:netcdf/nc:attribute[@name='Metadata_Link'])"/>
-  <xsl:variable name="locationCnt" select="count(/nc:netcdf/@location)"/>
   <xsl:variable name="identifierTotal" select="$idCnt + $identifierNameSpaceCnt + $metadataConventionCnt + $metadataLinkCnt"/>
   <xsl:variable name="identifierMax">4</xsl:variable>
   <!-- Service Fields: 4 possible -->
@@ -684,7 +683,7 @@
           </gmi:MI_CoverageDescription>
         </gmd:contentInfo>
       </xsl:if>
-      <xsl:if test="$publisherTotal or $locationCnt">
+      <xsl:if test="$publisherTotal or $thredds_opendapCnt">
         <gmd:distributionInfo>
           <gmd:MD_Distribution>
             <gmd:distributor>
@@ -705,19 +704,19 @@
                 <gmd:distributorFormat>
                   <gmd:MD_Format>
                     <gmd:name>
-                      <gco:CharacterString>netCDF</gco:CharacterString>
+                      <gco:CharacterString>OPeNDAP</gco:CharacterString>
                     </gmd:name>
                     <gmd:version gco:nilReason="unknown"/>
                   </gmd:MD_Format>
                 </gmd:distributorFormat>
-                <xsl:if test="$locationCnt">
+                <xsl:if test="$thredds_opendapCnt">
                   <gmd:distributorTransferOptions>
                     <gmd:MD_DigitalTransferOptions>
                       <gmd:onLine>
                         <gmd:CI_OnlineResource>
                           <gmd:linkage>
                             <gmd:URL>
-                              <xsl:value-of select="concat('http:',substring-after(nc:netcdf/@location,':'),'.info')"/>
+                              <xsl:value-of select="concat(/nc:netcdf/nc:attribute[@name='thredds_opendap_service']/@value,'.html')"/>
                             </gmd:URL>
                           </gmd:linkage>
                           <gmd:name>
@@ -1245,6 +1244,16 @@
                   <gmd:URL>
                     <xsl:value-of select="$operationURL"/>
                   </gmd:URL>
+                  <gmd:name>
+                    <gco:CharacterString><xsl:value-of select="$serviceID"/></gco:CharacterString>
+                  </gmd:name>
+                  <gmd:description>
+                    <gco:CharacterString><xsl:value-of select="$serviceTypeName"/></gco:CharacterString>
+                  </gmd:description>
+                  <gmd:function>
+                    <gmd:CI_OnLineFunctionCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_OnLineFunctionCode"
+                      codeListValue="download">download</gmd:CI_OnLineFunctionCode>
+                  </gmd:function>
                 </gmd:linkage>
               </gmd:CI_OnlineResource>
             </srv:connectPoint>

@@ -61,13 +61,13 @@ public class NcmlController implements IMetadataContoller {
 	}
 
 	public void init() throws ServletException {
-		_logServerStartup.info("Metadata Ncml - initialization start");
+		_logServerStartup.info("Metadata NCML - initialization start");
 
 	}
 
 	public void destroy() {
 		NetcdfDataset.shutdown();
-		_logServerStartup.info("Metadata Ncml - destroy done");
+		_logServerStartup.info("Metadata NCML - destroy done");
 	}
 
 	/** 
@@ -89,9 +89,9 @@ public class NcmlController implements IMetadataContoller {
 			res.setContentType("text/xml");
 			dataset = DatasetHandlerAdapter.openDataset(req, res);
 			Writer writer = res.getWriter();
-			EnhancedMetadataService.enhance(dataset, writer);
+			//EnhancedMetadataService.enhance(dataset, writer);
+			EnhancedMetadataService.enhance(dataset, writer, req);
 	        writer.flush();
-	        writer.close();
 	        
 		} catch (Exception e) {
 			_log.error(e.getMessage());

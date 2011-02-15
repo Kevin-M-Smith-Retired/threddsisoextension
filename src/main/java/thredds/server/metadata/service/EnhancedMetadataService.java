@@ -41,6 +41,8 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 
@@ -57,25 +59,36 @@ public class EnhancedMetadataService {
 	* 
 	* @param dataset NetcdfDataset to enhance the NCML
 	* @param writer writer to send enhanced NCML to
+	* @param req incoming URL request
 	*/	
-	public static void enhance(final NetcdfDataset dataset,  final Writer writer) {
+	public static void enhance(final NetcdfDataset dataset,  final Writer writer, final HttpServletRequest req) {
 		Extent ext = null;
+				
+		try {	
+	    	NCMLModifier ncmlMod = new NCMLModifier();
+	    	
+	    	//TODO replace with information from InvCatalogImpl
+	    	if (req!=null) {
+			    String baseUriString = req.getRequestURL().toString();
+			    String openDapService = null;
+			    if (baseUriString.contains("/ncml")) openDapService = baseUriString.replace("/ncml/", "/dodsC/");
+			    if (baseUriString.contains("/uddc")) openDapService = baseUriString.replace("/uddc/", "/dodsC/");
+			    if (baseUriString.contains("/iso")) openDapService = baseUriString.replace("/iso/", "/dodsC/");
 
-		try {
+			    ncmlMod.setOpenDapService(openDapService);
+	    	}
+	    	
 			ext = ThreddsExtentUtil.getExtent(dataset);
 			
 	        NcMLWriter ncMLWriter = new NcMLWriter();        	
 			String ncml = ncMLWriter.writeXML(dataset);
 			InputStream ncmlIs = new ByteArrayInputStream(ncml.getBytes("UTF-8"));
 	    	XMLUtil xmlUtil = new XMLUtil(ncmlIs);
-	    	List<Element> childElems = xmlUtil.elemFinder("//ncml:attribute", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");
-	    	
-	    	NCMLModifier ncmlMod = new NCMLModifier();
+	    	List<Element> childElems = xmlUtil.elemFinder("//ncml:attribute", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");	    	
 	    	ncmlMod.analyze(childElems);
 	    	
 	    	List<Element> list = xmlUtil.elemFinder("//ncml:netcdf", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");
 	    	Element rootElem = list.get(0);
-	   	
 	    	ncmlMod.update(ext, rootElem);
 	    	
 			xmlUtil.sortElements(rootElem, new ElementNameComparator());
@@ -84,8 +97,17 @@ public class EnhancedMetadataService {
 			_log.error(e);
 		}
 
-		
-	
 	}
-	
+
+	/** 
+	* Enhance NCML with Data Discovery conventions elements if not already in place in the metadata.
+	* 
+	* @param dataset NetcdfDataset to enhance the NCML
+	* @param writer writer to send enhanced NCML to
+	*
+	*/	
+	public static void enhance(final NetcdfDataset dataset,  final Writer writer) {
+		enhance(dataset, writer, null);
+	}
+
 }

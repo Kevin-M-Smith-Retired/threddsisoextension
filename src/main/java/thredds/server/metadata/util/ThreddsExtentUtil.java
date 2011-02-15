@@ -28,7 +28,9 @@
  */
 package thredds.server.metadata.util;
 
+import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import thredds.server.metadata.bean.Extent;
 import org.apache.log4j.Logger;
@@ -36,6 +38,8 @@ import org.apache.log4j.Logger;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.DateFormatter;
 
 /**
 * ThreddsExtentUtil
@@ -82,13 +86,31 @@ public class ThreddsExtentUtil {
 							.getMinValue()) / coordAxis.getSize());
 				}
 				if (coordAxis.getAxisType() == AxisType.Time) {
+					
 					ext._minTime = Double.toString(coordAxis.getMinValue());
 					ext._maxTime = Double.toString(coordAxis.getMaxValue());
 					ext._timeUnits = coordAxis.getUnitsString();
-					ext._timeRes = ((coordAxis.getMaxValue() - coordAxis
-							.getMinValue()) / coordAxis.getSize());
+					
+					StringTokenizer st = new StringTokenizer(ext._timeUnits);
+					String timeUnitsToken = st.nextToken();
+					
+					ext._timeRes = Double.toString(((coordAxis.getMaxValue() - coordAxis
+							.getMinValue()) / coordAxis.getSize())) + " " + timeUnitsToken;
+
+					//Add 2/8/2011
+					String rawMinTime = Double.toString(coordAxis.getMinValue());
+					String rawMaxTime = Double.toString(coordAxis.getMaxValue());
+					_log.debug("udunits string = " + rawMinTime + " " + ext._timeUnits);
+					Date startDate = DateUnit.getStandardDate(rawMinTime + " " + ext._timeUnits);
+					Date endDate = DateUnit.getStandardDate(rawMaxTime + " " + ext._timeUnits);
+					DateFormatter df = new DateFormatter();
+					ext._minTime = df.toDateTimeStringISO(startDate);
+					ext._maxTime = df.toDateTimeStringISO(endDate);
+					//End Add 2/8/2011
 				}
+			
 				if (coordAxis.getAxisType() == AxisType.Height) {
+				
 					ext._minHeight = coordAxis.getMinValue();
 					ext._maxHeight = coordAxis.getMaxValue();
 					ext._heightUnits = coordAxis.getUnitsString();

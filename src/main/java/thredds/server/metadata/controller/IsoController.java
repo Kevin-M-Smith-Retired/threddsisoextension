@@ -65,12 +65,12 @@ public class IsoController implements IMetadataContoller {
 	}
 
 	public void init() throws ServletException {
-		_logServerStartup.info("Metadata Iso - initialization start");
+		_logServerStartup.info("Metadata ISO - initialization start");
 	}
 
 	public void destroy() {
 		NetcdfDataset.shutdown();
-		_logServerStartup.info("Metadata Iso - destroy done");
+		_logServerStartup.info("Metadata ISO - destroy done");
 	}
 
 	/** 
@@ -84,16 +84,17 @@ public class IsoController implements IMetadataContoller {
 	@RequestMapping(params = {})
 	public void handleMetadataRequest(final HttpServletRequest req,
 			final HttpServletResponse res) throws ServletException, IOException {
-		_log.info("Handling Iso metadata request.");
+		_log.info("Handling ISO metadata request.");
 
 		NetcdfDataset dataset = null;
 
 		try {
-
+			
+			
 			dataset = DatasetHandlerAdapter.openDataset(req, res);
 			res.setContentType("text/xml");
 			Writer writer = new StringWriter();
-			EnhancedMetadataService.enhance(dataset, writer);			
+			EnhancedMetadataService.enhance(dataset, writer, req);			
 			String ncml = writer.toString();
 			writer.flush();
 			writer.close();
@@ -102,7 +103,6 @@ public class IsoController implements IMetadataContoller {
 			ThreddsTranslatorUtil.transform("UnidataDD2MI.xsl", is, res
 					.getWriter());
 			res.getWriter().flush();
-			res.getWriter().close();
 
 		} catch (Exception e) {
 			_log.error(e.getMessage());

@@ -65,12 +65,12 @@ public class UddcController implements IMetadataContoller {
 	}
 
 	public void init() throws ServletException {
-		_logServerStartup.info("Metadata Uddc - initialization start");
+		_logServerStartup.info("Metadata UDDC - initialization start");
 	}
 
 	public void destroy() {
 		NetcdfDataset.shutdown();
-		_logServerStartup.info("Metadata Uddc - destroy done");
+		_logServerStartup.info("Metadata UDDC - destroy done");
 	}
 
 	/** 
@@ -84,7 +84,7 @@ public class UddcController implements IMetadataContoller {
 	@RequestMapping(params = {})
 	public void handleMetadataRequest(final HttpServletRequest req,
 			final HttpServletResponse res) throws ServletException {
-		_log.info("Handling Uddc metadata request.");
+		_log.info("Handling UDDC metadata request.");
 
 		NetcdfDataset dataset = null;
 
@@ -93,7 +93,8 @@ public class UddcController implements IMetadataContoller {
 			dataset = DatasetHandlerAdapter.openDataset(req, res);
 			res.setContentType("text/html");
 			Writer writer = new StringWriter();
-			EnhancedMetadataService.enhance(dataset, writer);			
+			//EnhancedMetadataService.enhance(dataset, writer);		
+			EnhancedMetadataService.enhance(dataset, writer, req);
 			String ncml = writer.toString();
 			writer.flush();
 			writer.close();
@@ -103,7 +104,6 @@ public class UddcController implements IMetadataContoller {
 					is, res.getWriter());
 			
 			res.getWriter().flush();
-			res.getWriter().close();
 
 		} catch (Exception e) {
 			_log.error(e.getMessage());
