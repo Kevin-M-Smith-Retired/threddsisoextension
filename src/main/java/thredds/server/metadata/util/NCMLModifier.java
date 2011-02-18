@@ -36,11 +36,9 @@ import thredds.server.metadata.bean.NetCDFAttributes;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.dom4j.Node;
 import org.jdom.Element;
 import org.jdom.Attribute;
 import org.jdom.Namespace;
-import org.w3c.dom.NamedNodeMap;
 
 /**
 * NCMLModifier
