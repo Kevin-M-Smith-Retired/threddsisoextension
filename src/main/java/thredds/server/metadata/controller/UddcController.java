@@ -38,6 +38,8 @@ import javax.servlet.ServletException;
 import thredds.server.metadata.service.EnhancedMetadataService;
 import thredds.server.metadata.util.DatasetHandlerAdapter;
 import thredds.server.metadata.util.ThreddsTranslatorUtil;
+import thredds.servlet.ThreddsConfig;
+import thredds.servlet.UsageLog;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -54,18 +56,23 @@ import ucar.nc2.dataset.NetcdfDataset;
  */
 @Controller
 @RequestMapping("/uddc")
-public class UddcController implements IMetadataContoller {
+public class UddcController extends AbstractMetadataController {
 	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
 			.getLogger(UddcController.class);
 	private static org.slf4j.Logger _logServerStartup = org.slf4j.LoggerFactory
 			.getLogger("serverStartup");
-
+	
+	private boolean allow = false;	
+	private String metadataServiceType = "UDDC"; 
+	
 	protected String getPath() {
-		return "Uddc/";
+		return metadataServiceType + "/";
 	}
 
 	public void init() throws ServletException {
 		_logServerStartup.info("Metadata UDDC - initialization start");
+		allow = ThreddsConfig.getBoolean("NCISO.uddcAllow", false);
+	    _logServerStartup.info("NCISO.uddcAllow= "+allow);		
 	}
 
 	public void destroy() {
@@ -89,11 +96,11 @@ public class UddcController implements IMetadataContoller {
 		NetcdfDataset dataset = null;
 
 		try {
-
+			isAllowed(allow, metadataServiceType, res);
 			dataset = DatasetHandlerAdapter.openDataset(req, res);
 			res.setContentType("text/html");
 			Writer writer = new StringWriter();
-			//EnhancedMetadataService.enhance(dataset, writer);		
+	
 			EnhancedMetadataService.enhance(dataset, writer, req);
 			String ncml = writer.toString();
 			writer.flush();
@@ -106,11 +113,12 @@ public class UddcController implements IMetadataContoller {
 			res.getWriter().flush();
 
 		} catch (Exception e) {
-			_log.error(e.getMessage());
+			_log.error("Error in UddcController:", e);
 
 		} finally {
 			DatasetHandlerAdapter.closeDataset(dataset);
 		}
 	}
 	
+
 }

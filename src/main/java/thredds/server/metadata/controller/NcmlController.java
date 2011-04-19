@@ -37,6 +37,7 @@ import javax.servlet.ServletException;
 
 import thredds.server.metadata.service.EnhancedMetadataService;
 import thredds.server.metadata.util.DatasetHandlerAdapter;
+import thredds.servlet.ThreddsConfig;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -50,19 +51,23 @@ import ucar.nc2.dataset.NetcdfDataset;
  */
 @Controller
 @RequestMapping("/ncml")
-public class NcmlController implements IMetadataContoller {
+public class NcmlController extends AbstractMetadataController {
 	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
 			.getLogger(NcmlController.class);
 	private static org.slf4j.Logger _logServerStartup = org.slf4j.LoggerFactory
 			.getLogger("serverStartup");
-
+	
+	private boolean allow = false;
+	private String metadataServiceType = "NCML"; 
+	
 	protected String getPath() {
-		return "ncml/";
+		return metadataServiceType + "/";
 	}
 
 	public void init() throws ServletException {
 		_logServerStartup.info("Metadata NCML - initialization start");
-
+		allow = ThreddsConfig.getBoolean("NCISO.ncmlAllow", false);
+	    _logServerStartup.info("NCISO.ncmlAllow= "+allow);
 	}
 
 	public void destroy() {
@@ -86,15 +91,16 @@ public class NcmlController implements IMetadataContoller {
 		NetcdfDataset dataset = null;
 
 		try {
+			isAllowed(allow, metadataServiceType, res);
 			res.setContentType("text/xml");
 			dataset = DatasetHandlerAdapter.openDataset(req, res);
 			Writer writer = res.getWriter();
-			//EnhancedMetadataService.enhance(dataset, writer);
+
 			EnhancedMetadataService.enhance(dataset, writer, req);
 	        writer.flush();
 	        
 		} catch (Exception e) {
-			_log.error(e.getMessage());
+			_log.error("Error in NcmlController:", e);
 
 		} finally {
 			DatasetHandlerAdapter.closeDataset(dataset);
