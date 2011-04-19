@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import thredds.server.metadata.bean.Extent;
+
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.apache.log4j.Logger;
 
 import ucar.nc2.constants.AxisType;
@@ -94,8 +96,7 @@ public class ThreddsExtentUtil {
 					StringTokenizer st = new StringTokenizer(ext._timeUnits);
 					String timeUnitsToken = st.nextToken();
 					
-					ext._timeRes = Double.toString(((coordAxis.getMaxValue() - coordAxis
-							.getMinValue()) / coordAxis.getSize())) + " " + timeUnitsToken;
+
 
 					//Add 2/8/2011
 					String rawMinTime = Double.toString(coordAxis.getMinValue());
@@ -107,6 +108,11 @@ public class ThreddsExtentUtil {
 					ext._minTime = df.toDateTimeStringISO(startDate);
 					ext._maxTime = df.toDateTimeStringISO(endDate);
 					//End Add 2/8/2011
+					
+					//Revised to get ISO Duration format
+					long duration = endDate.getTime() - startDate.getTime();
+					ext._timeRes = DurationFormatUtils.formatDurationISO(duration);
+
 				}
 			
 				if (coordAxis.getAxisType() == AxisType.Height) {

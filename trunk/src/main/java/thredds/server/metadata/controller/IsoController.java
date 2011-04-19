@@ -38,6 +38,7 @@ import javax.servlet.ServletException;
 import thredds.server.metadata.service.EnhancedMetadataService;
 import thredds.server.metadata.util.DatasetHandlerAdapter;
 import thredds.server.metadata.util.ThreddsTranslatorUtil;
+import thredds.servlet.ThreddsConfig;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -54,18 +55,23 @@ import ucar.nc2.dataset.NetcdfDataset;
  */
 @Controller
 @RequestMapping("/iso")
-public class IsoController implements IMetadataContoller {
+public class IsoController extends AbstractMetadataController {
 	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
 			.getLogger(IsoController.class);
 	private static org.slf4j.Logger _logServerStartup = org.slf4j.LoggerFactory
 			.getLogger("serverStartup");
-
+	
+	private boolean allow = false;
+	private String metadataServiceType = "ISO"; 
+	
 	protected String getPath() {
-		return "Iso/";
+		return metadataServiceType + "/";
 	}
 
 	public void init() throws ServletException {
 		_logServerStartup.info("Metadata ISO - initialization start");
+		allow = ThreddsConfig.getBoolean("NCISO.isoAllow", false);
+	    _logServerStartup.info("NCISO.isoAllow= "+allow);		
 	}
 
 	public void destroy() {
@@ -88,9 +94,8 @@ public class IsoController implements IMetadataContoller {
 
 		NetcdfDataset dataset = null;
 
-		try {
-			
-			
+		try {			
+			isAllowed(allow, metadataServiceType, res);			
 			dataset = DatasetHandlerAdapter.openDataset(req, res);
 			res.setContentType("text/xml");
 			Writer writer = new StringWriter();
@@ -105,7 +110,7 @@ public class IsoController implements IMetadataContoller {
 			res.getWriter().flush();
 
 		} catch (Exception e) {
-			_log.error(e.getMessage());
+			_log.error("Error in IsoController:", e);
 
 		} finally {
 			DatasetHandlerAdapter.closeDataset(dataset);

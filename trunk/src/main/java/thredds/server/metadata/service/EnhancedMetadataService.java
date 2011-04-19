@@ -85,7 +85,6 @@ public class EnhancedMetadataService {
 			InputStream ncmlIs = new ByteArrayInputStream(ncml.getBytes("UTF-8"));
 	    	XMLUtil xmlUtil = new XMLUtil(ncmlIs);
 	    	List<Element> childElems = xmlUtil.elemFinder("//ncml:attribute", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");	    	
-	    	ncmlMod.analyze(childElems);
 	    	
 	    	List<Element> list = xmlUtil.elemFinder("//ncml:netcdf", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");
 	    	Element rootElem = list.get(0);
@@ -94,7 +93,7 @@ public class EnhancedMetadataService {
 			xmlUtil.sortElements(rootElem, new ElementNameComparator());
 	    	xmlUtil.write(writer);				
 		} catch (Exception e) {
-			_log.error(e);
+			_log.error("EnhancedMetadataService error:", e);
 		}
 
 	}

@@ -28,13 +28,11 @@
  */
 package thredds.server.metadata.util;
 
-import thredds.server.metadata.bean.Extent;
-import thredds.server.metadata.bean.NetCDFAttribute;
-import thredds.server.metadata.bean.NetCDFAttributeType;
-import thredds.server.metadata.bean.NetCDFAttributes;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
-import java.util.Hashtable;
-import java.util.List;
+import thredds.server.metadata.bean.Extent;
 
 import org.jdom.Element;
 import org.jdom.Attribute;
@@ -47,52 +45,14 @@ import org.jdom.Namespace;
 */
 public class NCMLModifier {
 
-	private Hashtable<String, NetCDFAttribute> _netCDFAttHt = null;	
     private String _openDapService = null;
     
    /** 
 	* Class constructor.
 	*/ 	
 	public NCMLModifier() {
-		NetCDFAttributes netCDFAtt = new NetCDFAttributes();
-		_netCDFAttHt = netCDFAtt.getHashtable();
-	}
-	
-	/** 
-	* Look for existing Data Discovery convention elements in the NCML document.
-	* 
-	* @param list list of NCML elements
-	*/			
-	public void analyze(final List<Element> childElems) {
-		
-	    for (Element childElem : childElems) {
-	      List<Attribute> atts = childElem.getAttributes();
-	      for (Attribute att : atts) {
-	    	  if (att.getValue().equals("geospatial_lat_min")) _netCDFAttHt.put("geospatial_lat_min", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_LON_MIN, new Boolean(true)));	    	  
-	    	  if (att.getValue().equals("geospatial_lat_max")) _netCDFAttHt.put("geospatial_lat_max", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_LAT_MIN, new Boolean(true)));
 
-	    	  if (att.getValue().equals("geospatial_lon_min")) _netCDFAttHt.put("geospatial_lon_min", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_LON_MAX, new Boolean(true)));
-	    	  if (att.getValue().equals("geospatial_lon_max")) _netCDFAttHt.put("geospatial_lon_max", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_LAT_MAX, new Boolean(true)));
-	    	  
-	    	  if (att.getValue().equals("geospatial_lat_units")) _netCDFAttHt.put("geospatial_lat_units", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_LON_UNITS, new Boolean(true)));
-	    	  if (att.getValue().equals("geospatial_lat_resolution")) _netCDFAttHt.put("geospatial_lat_resolution", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_LON_RES, new Boolean(true)));
-	    	  if (att.getValue().equals("geospatial_lon_units")) _netCDFAttHt.put("geospatial_lon_units", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_LAT_UNITS, new Boolean(true)));
-	    	  if (att.getValue().equals("geospatial_lon_resolution")) _netCDFAttHt.put("geospatial_lon_resolution", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_LAT_RES, new Boolean(true)));
-		 
-	    	  if (att.getValue().equals("geospatial_vertical_min")) _netCDFAttHt.put("geospatial_vertical_min", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_VERTICAL_MIN, new Boolean(true)));
-	    	  if (att.getValue().equals("geospatial_vertical_max")) _netCDFAttHt.put("geospatial_vertical_max", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_VERTICAL_MAX, new Boolean(true)));		    	  
-	    	  if (att.getValue().equals("geospatial_vertical_units")) _netCDFAttHt.put("geospatial_vertical_units", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_VERTICAL_UNITS, new Boolean(true)));
-	    	  if (att.getValue().equals("geospatial_vertical_resolution")) _netCDFAttHt.put("geospatial_vertical_resolution", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_VERTICAL_RES, new Boolean(true)));
-	    	  if (att.getValue().equals("geospatial_vertical_positive")) _netCDFAttHt.put("geospatial_vertical_positive", new NetCDFAttribute(NetCDFAttributeType.GEOSPATIAL_VERTICAL_POS, new Boolean(true)));
-
-	    	  if (att.getValue().equals("time_coverage_start")) _netCDFAttHt.put("time_coverage_start", new NetCDFAttribute(NetCDFAttributeType.TIME_COVERAGE_START, new Boolean(true)));
-	    	  if (att.getValue().equals("time_coverage_end")) _netCDFAttHt.put("time_coverage_end", new NetCDFAttribute(NetCDFAttributeType.TIME_COVERAGE_END, new Boolean(true)));
-	    	  if (att.getValue().equals("time_coverage_resolution")) _netCDFAttHt.put("time_coverage_resolution", new NetCDFAttribute(NetCDFAttributeType.TIME_COVERAGE_RES, new Boolean(true)));	    	  
-	
-	      }
-	    }
-
-	}
+	}	
 	
 	/** 
 	* Update the NCML document by calculating Data Discovery elements using CF conventions
@@ -102,83 +62,41 @@ public class NCMLModifier {
 	* @param element the root XML element of the NCML document
 	*/			
 	public void update(final Extent ext, final Element rootElem) {
-        for (String key : _netCDFAttHt.keySet()) {
-        	NetCDFAttribute netCDFAtt = _netCDFAttHt.get(key);
-        	//System.out.println(key + ": " + netCDFAtt.exists());
-           
-            if (!netCDFAtt.exists()) { // Add it
-        	   switch (netCDFAtt.getType()) {
-        	     //COORDS
-        	     case GEOSPATIAL_LON_MIN:
-        	    	 if (ext._minLon!=null) addElem(rootElem, key, ext._minLon.toString(), "float");
-        	    	 break;
-        	     case GEOSPATIAL_LAT_MIN:
-        	    	 if (ext._minLat!=null) addElem(rootElem, key, ext._minLat.toString(), "float");
-        	    	 break;        
-        	     case GEOSPATIAL_LON_MAX:
-        	    	 if (ext._maxLon!=null) addElem(rootElem, key, ext._maxLon.toString(), "float");
-        	    	 break;
-        	     case GEOSPATIAL_LAT_MAX:
-        	    	 if (ext._maxLat!=null) addElem(rootElem, key, ext._maxLat.toString(), "float");
-        	    	 break;  
-        	     case GEOSPATIAL_LON_UNITS:
-        	    	 if (ext._lonUnits!=null) addElem(rootElem, key, ext._lonUnits);
-        	    	 break;       
-        	     case GEOSPATIAL_LAT_UNITS:
-        	    	 if (ext._latUnits!=null) addElem(rootElem, key, ext._latUnits);
-        	    	 break;         	    	 
-        	     case GEOSPATIAL_LON_RES:
-        	    	 if (ext._lonRes!=null) addElem(rootElem, key, ext._lonRes.toString());
-        	    	 break;
-        	     case GEOSPATIAL_LAT_RES:
-        	    	 if (ext._latRes!=null) addElem(rootElem, key, ext._latRes.toString());
-        	    	 break;          	    	 
+		//Geospatial        	 		
+
+        if (ext._minLon!=null) addElem(rootElem, "netcdf_geospatial_lon_min", ext._minLon.toString(), "float");
+        if (ext._minLat!=null) addElem(rootElem, "netcdf_geospatial_lat_min", ext._minLat.toString(), "float");
+        if (ext._maxLon!=null) addElem(rootElem, "netcdf_geospatial_lon_max", ext._maxLon.toString(), "float");
+        if (ext._maxLat!=null) addElem(rootElem, "netcdf_geospatial_lat_max", ext._maxLat.toString(), "float");
+        if (ext._lonUnits!=null) addElem(rootElem, "netcdf_geospatial_lon_units", ext._lonUnits);
+        if (ext._latUnits!=null) addElem(rootElem, "netcdf_geospatial_lat_units", ext._latUnits);
+        if (ext._lonRes!=null) addElem(rootElem, "netcdf_geospatial_lon_resolution", ext._lonRes.toString());
+        if (ext._latRes!=null) addElem(rootElem, "netcdf_geospatial_lat_resolution", ext._latRes.toString());
         	    	 
-        	     //VERTICAL        	 		
-        	     case GEOSPATIAL_VERTICAL_MIN:
-        	    	 if (ext._minHeight!=null) addElem(rootElem, key, ext._minHeight.toString());
-        	    	 break;
-        	     case GEOSPATIAL_VERTICAL_MAX:
-        	    	 if (ext._maxHeight!=null) addElem(rootElem, key, ext._maxHeight.toString());
-        	    	 break;        	    	 
-        	     case GEOSPATIAL_VERTICAL_UNITS:
-        	    	 if (ext._heightUnits!=null) addElem(rootElem, key, ext._heightUnits);
-        	    	 break;     
-        	     case GEOSPATIAL_VERTICAL_RES:
-        	    	 if (ext._heightRes!=null) addElem(rootElem, key, ext._heightRes.toString());
-        	    	 break;      
-        	     case GEOSPATIAL_VERTICAL_POS:
-        	    	 if (ext._vOrientation!=null) addElem(rootElem, key, ext._vOrientation);
-        	    	 break;         	    	 
-        	     
-        	     //TIME
-        	     case TIME_COVERAGE_START:
-        	    	 if (ext._minTime!=null) addElem(rootElem, key, ext._minTime.toString());
-        	    	 break;  
-        	     case TIME_COVERAGE_END:
-        	    	 if (ext._maxTime!=null) addElem(rootElem, key, ext._maxTime.toString());
-        	    	 break;       
-        	     case TIME_COVERAGE_UNITS:
-        	    	 if (ext._timeUnits!=null) addElem(rootElem, key, ext._timeUnits.toString());
-        	    	 break;            	    	 
-        	     case TIME_COVERAGE_RES:
-        	    	 if (ext._timeRes!=null) addElem(rootElem, key, ext._timeRes.toString());
-        	    	 break;         	    	 
-        	   }
-           }
-
-
-		} //End for loop
+        //VERTICAL        	 		
+        if (ext._minHeight!=null) addElem(rootElem, "netcdf_geospatial_vertical_min", ext._minHeight.toString());
+        if (ext._maxHeight!=null) addElem(rootElem, "netcdf_geospatial_vertical_max", ext._maxHeight.toString());
+        if (ext._heightUnits!=null) addElem(rootElem, "netcdf_geospatial_vertical_units", ext._heightUnits);
+        if (ext._heightRes!=null) addElem(rootElem, "netcdf_geospatial_vertical_resolution", ext._heightRes.toString());
+        if (ext._vOrientation!=null) addElem(rootElem, "netcdf_geospatial_vertical_positive", ext._vOrientation);
+        if (ext._minTime!=null) addElem(rootElem, "netcdf_time_coverage_start", ext._minTime.toString());
+        if (ext._maxTime!=null) addElem(rootElem, "netcdf_time_coverage_end", ext._maxTime.toString());
+        if (ext._timeUnits!=null) addElem(rootElem, "netcdf_time_coverage_units", ext._timeUnits.toString());
+        if (ext._timeRes!=null) addElem(rootElem, "netcdf_time_coverage_resolution", ext._timeRes.toString());
         
         // Add opendap service reference
         if (_openDapService!=null) addElem(rootElem,"thredds_opendap_service", _openDapService);
 
         // Update location attribute for security purposes       
         Attribute locAttr = rootElem.getAttribute("location");
-   	    //String locStr = locAttr.getValue();
-   	    //int startPos = locStr.lastIndexOf("/") + 1;
-   	    //String modLocStr = locStr.substring(startPos, locStr.length());
    	    locAttr.setValue(_openDapService);
+   	    
+        // Add date stamp for metadata creation
+		Date dateStamp = Calendar.getInstance().getTime();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String metadata_creation_date = sdf.format(dateStamp);
+        addElem(rootElem,"thredds_nciso_metadata_creation", metadata_creation_date);
+
 	}
 	
 	public void setOpenDapService(String openDapService) {
