@@ -28,6 +28,7 @@
  */
 package thredds.server.metadata.service;
 
+import thredds.catalog.InvDataset;
 import thredds.server.metadata.bean.Extent;
 import thredds.server.metadata.util.ElementNameComparator;
 import thredds.server.metadata.util.NCMLModifier;
@@ -61,14 +62,14 @@ public class EnhancedMetadataService {
 	* @param writer writer to send enhanced NCML to
 	* @param req incoming URL request
 	*/	
-	public static void enhance(final NetcdfDataset dataset,  final Writer writer, final HttpServletRequest req) {
+	public static void enhance(final NetcdfDataset dataset, final InvDataset ids, final Writer writer) {
 		Extent ext = null;
 				
 		try {	
 	    	NCMLModifier ncmlMod = new NCMLModifier();
 	    	
 	    	//TODO replace with information from InvCatalogImpl
-	    	if (req!=null) {
+	    	/*if (req!=null) {
 			    String baseUriString = req.getRequestURL().toString();
 			    String openDapService = null;
 			    if (baseUriString.contains("/ncml")) openDapService = baseUriString.replace("/ncml/", "/dodsC/");
@@ -76,7 +77,7 @@ public class EnhancedMetadataService {
 			    if (baseUriString.contains("/iso")) openDapService = baseUriString.replace("/iso/", "/dodsC/");
 
 			    ncmlMod.setOpenDapService(openDapService);
-	    	}
+	    	}*/
 	    	
 			ext = ThreddsExtentUtil.getExtent(dataset);
 			
@@ -84,29 +85,25 @@ public class EnhancedMetadataService {
 			String ncml = ncMLWriter.writeXML(dataset);
 			InputStream ncmlIs = new ByteArrayInputStream(ncml.getBytes("UTF-8"));
 	    	XMLUtil xmlUtil = new XMLUtil(ncmlIs);
+	    	
+	    	//Needed????????????
 	    	List<Element> childElems = xmlUtil.elemFinder("//ncml:attribute", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");	    	
 	    	
 	    	List<Element> list = xmlUtil.elemFinder("//ncml:netcdf", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");
 	    	Element rootElem = list.get(0);
-	    	ncmlMod.update(ext, rootElem);
+	    	Element cfGroupElem = ncmlMod.doAddGroupElem(rootElem, "CFMetadata");
+	    	ncmlMod.addCFMetdata(ext, cfGroupElem);
 	    	
+	    	if (ids!=null) {
+	    	    Element threddsGroupElem = ncmlMod.doAddGroupElem(rootElem, "THREDDSMetadata");
+	    	    ncmlMod.addThreddsMetadata(ids, threddsGroupElem);
+	    	}
 			xmlUtil.sortElements(rootElem, new ElementNameComparator());
 	    	xmlUtil.write(writer);				
 		} catch (Exception e) {
 			_log.error("EnhancedMetadataService error:", e);
 		}
 
-	}
-
-	/** 
-	* Enhance NCML with Data Discovery conventions elements if not already in place in the metadata.
-	* 
-	* @param dataset NetcdfDataset to enhance the NCML
-	* @param writer writer to send enhanced NCML to
-	*
-	*/	
-	public static void enhance(final NetcdfDataset dataset,  final Writer writer) {
-		enhance(dataset, writer, null);
 	}
 
 }

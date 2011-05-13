@@ -69,11 +69,13 @@ public class ThreddsExtentUtil {
 
 	private static Extent doGetExtent(final NetcdfDataset ncd) throws Exception {
 		Extent ext = new Extent();
-
+		
 		List<CoordinateAxis> coordAxes = ncd.getCoordinateAxes();
 		try {
 			for (CoordinateAxis coordAxis : coordAxes) {
+				
 				if (coordAxis.getAxisType() == AxisType.Lat) {
+					logAvailableMemory("Retrieving Lat coordAxis values");
 					ext._minLat = coordAxis.getMinValue();
 					ext._maxLat = coordAxis.getMaxValue();
 					ext._latUnits = coordAxis.getUnitsString();
@@ -81,6 +83,7 @@ public class ThreddsExtentUtil {
 							.getMinValue()) / coordAxis.getSize());
 				}
 				if (coordAxis.getAxisType() == AxisType.Lon) {
+					logAvailableMemory("Retrieving Lon coordAxis values");
 					ext._minLon = coordAxis.getMinValue();
 					ext._maxLon = coordAxis.getMaxValue();
 					ext._lonUnits = coordAxis.getUnitsString();
@@ -88,15 +91,13 @@ public class ThreddsExtentUtil {
 							.getMinValue()) / coordAxis.getSize());
 				}
 				if (coordAxis.getAxisType() == AxisType.Time) {
-					
+					logAvailableMemory("Retrieving Time coordAxis values");
 					ext._minTime = Double.toString(coordAxis.getMinValue());
 					ext._maxTime = Double.toString(coordAxis.getMaxValue());
 					ext._timeUnits = coordAxis.getUnitsString();
 					
 					StringTokenizer st = new StringTokenizer(ext._timeUnits);
 					String timeUnitsToken = st.nextToken();
-					
-
 
 					//Add 2/8/2011
 					String rawMinTime = Double.toString(coordAxis.getMinValue());
@@ -116,7 +117,7 @@ public class ThreddsExtentUtil {
 				}
 			
 				if (coordAxis.getAxisType() == AxisType.Height) {
-				
+					logAvailableMemory("Retrieving Height coordAxis values");
 					ext._minHeight = coordAxis.getMinValue();
 					ext._maxHeight = coordAxis.getMaxValue();
 					ext._heightUnits = coordAxis.getUnitsString();
@@ -158,4 +159,14 @@ public class ThreddsExtentUtil {
 	public static Extent getExtent(final NetcdfDataset ncd) throws Exception {
 		return doGetExtent(ncd);
 	}	
+	
+	private static void logAvailableMemory(String message) {
+		//System.out.println
+		//_log.info
+		int mb = 1024*1024;
+		
+		_log.info(message);
+		_log.info("Total Memory: "+Runtime.getRuntime().totalMemory()/mb);    
+		_log.info("Free Memory: "+Runtime.getRuntime().freeMemory()/mb);
+	}
 }
