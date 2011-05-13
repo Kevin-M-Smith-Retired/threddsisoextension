@@ -24,7 +24,7 @@
 * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER
 * RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
 * CONTRACT, NEGLIGENCE OR OTHER TORTUOUS ACTION, ARISING OUT OF OR IN
-* CONNECTION WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE. 
+* CONNECTION WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package thredds.server.metadata.util;
 
@@ -47,14 +47,14 @@ import ucar.nc2.dataset.NetcdfDataset;
 */
 public class DatasetHandlerAdapter {
 	private static final Logger _log = Logger.getLogger(DatasetHandlerAdapter.class);
-	
-	/** 
+
+	/**
 	* Open a NetcdfDataset based on the incoming url request.
-	* 
-	* @param request incoming url request 
+	*
+	* @param request incoming url request
 	* @param response outgoing web based response
-	* @return dataset a NetcdfDataset as specifing in the request
-	*/		
+	* @return dataset a NetcdfDataset as specified in the request
+	*/
 	public static NetcdfDataset openDataset(final HttpServletRequest req,
 			final HttpServletResponse res) throws Exception {
 
@@ -88,12 +88,12 @@ public class DatasetHandlerAdapter {
 		return dataset;
 
 	}
-	
-	/** 
+
+	/**
 	* Close a NetcdfDataset.
-	* 
-	* @param dataset the NetcdfDataset to close 
-	*/	
+	*
+	* @param dataset the NetcdfDataset to close
+	*/
 	public static void closeDataset(final NetcdfDataset dataset) {
 		if (dataset == null)
 			return;

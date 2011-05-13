@@ -35,12 +35,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
+import thredds.catalog.InvCatalog;
+import thredds.catalog.InvDataset;
+import thredds.catalog.InvDatasetImpl;
 import thredds.server.metadata.service.EnhancedMetadataService;
 import thredds.server.metadata.util.DatasetHandlerAdapter;
+import thredds.servlet.DataRootHandler;
 import thredds.servlet.ThreddsConfig;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import ucar.nc2.dataset.NetcdfDataset;
 
@@ -88,25 +94,77 @@ public class NcmlController extends AbstractMetadataController {
 			final HttpServletResponse res) throws ServletException, IOException {
 		_log.info("Handling NCML metadata request.");
 
-		NetcdfDataset dataset = null;
+		NetcdfDataset netCdfDataset = null;
 
 		try {
 			isAllowed(allow, metadataServiceType, res);
 			res.setContentType("text/xml");
-			dataset = DatasetHandlerAdapter.openDataset(req, res);
+			netCdfDataset = DatasetHandlerAdapter.openDataset(req, res);
+			
+			//Get the response writer
 			Writer writer = res.getWriter();
-
-			EnhancedMetadataService.enhance(dataset, writer, req);
-	        writer.flush();
-	        
+			
+			//Get Thredds level metadata if it exists
+			InvDataset ids = this.getThreddsDataset(req);	
+			
+			//Enhance with file and dataset level metadata
+			EnhancedMetadataService.enhance(netCdfDataset, ids, writer);
+			writer.flush();
+			
 		} catch (Exception e) {
 			_log.error("Error in NcmlController:", e);
 
 		} finally {
-			DatasetHandlerAdapter.closeDataset(dataset);
+			DatasetHandlerAdapter.closeDataset(netCdfDataset);
 		}
 	}
 
+	/** 
+	* Get the THREDDS dataset object 
+	* where catalogString and dataset are passed in the request string
+	* @param request incoming url request 
+	*/	
+    private InvDataset getThreddsDataset(final HttpServletRequest req) {
+        /*Test values
+        catalogPath = "catalog.xml";
+        catalogString = "http://localhost:8080/thredds/";
+        invDatasetString = "testCRMdataset";
+        */
+    	
+    	InvCatalog catalog = null;
+    	InvDataset ids = null;
+        String catalogString = req.getParameter("catalog");
+        String invDatasetString = req.getParameter("dataset");
+        String catalogPath = null; 
+        String catalogUri = null;
+        
 
+    	try
+        {  
+    	  catalogPath = catalogString.substring(catalogString.lastIndexOf("/")+1,catalogString.length()-4)+"xml";	
+          catalogUri = catalogString.substring(0,catalogString.lastIndexOf("/"));
+    	  _log.info("ncISO catalogPath=" + catalogPath +"; " + "catalogUri=" +catalogUri + "; dataset=" + invDatasetString);
+           // Check for matching catalog.
+          
+          DataRootHandler drh = DataRootHandler.getInstance();          	
+          catalog = drh.getCatalog( catalogPath, new URI( catalogString ) );
+          ids = catalog.findDatasetByID(invDatasetString);
+          
+          if (ids!=null) {
+            _log.info("Dataset information retrieved via ncISO!"
+            + ids.getCatalogUrl() + "; id=" + ids.getName());          
+          }          
+        }
+    	catch ( NullPointerException npe) {
+    	    _log.error( "NullPointer - getTDSMetadata failed: ", npe );
+    	}
+        catch ( URISyntaxException e )
+        {
+          String msg = "Bad URI syntax [" + catalogString + "]: " + e.getMessage();
+            _log.error( msg + " getTDSMetadata failed: ", e );          
+        } 
+        return ids;
+        
+    }
 
 }
