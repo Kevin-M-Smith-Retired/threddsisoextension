@@ -35,11 +35,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
+import thredds.catalog.InvDataset;
 import thredds.server.metadata.service.EnhancedMetadataService;
 import thredds.server.metadata.util.DatasetHandlerAdapter;
 import thredds.server.metadata.util.ThreddsTranslatorUtil;
 import thredds.servlet.ThreddsConfig;
-import thredds.servlet.UsageLog;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -58,21 +58,17 @@ import ucar.nc2.dataset.NetcdfDataset;
 @RequestMapping("/uddc")
 public class UddcController extends AbstractMetadataController {
 	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
-			.getLogger(UddcController.class);
-	private static org.slf4j.Logger _logServerStartup = org.slf4j.LoggerFactory
-			.getLogger("serverStartup");
-	
-	private boolean allow = false;	
-	private String metadataServiceType = "UDDC"; 
-	
+	    .getLogger(UddcController.class);
+
 	protected String getPath() {
-		return metadataServiceType + "/";
+		return _metadataServiceType + "/";
 	}
 
 	public void init() throws ServletException {
+		_metadataServiceType = "UDDC";
 		_logServerStartup.info("Metadata UDDC - initialization start");
-		allow = ThreddsConfig.getBoolean("NCISO.uddcAllow", false);
-	    _logServerStartup.info("NCISO.uddcAllow= "+allow);		
+		_allow = ThreddsConfig.getBoolean("NCISO.uddcAllow", false);
+	    _logServerStartup.info("NCISO.uddcAllow= " + _allow);		
 	}
 
 	public void destroy() {
@@ -93,15 +89,17 @@ public class UddcController extends AbstractMetadataController {
 			final HttpServletResponse res) throws ServletException {
 		_log.info("Handling UDDC metadata request.");
 
-		NetcdfDataset dataset = null;
+		NetcdfDataset netCdfDataset = null;
 
 		try {
-			isAllowed(allow, metadataServiceType, res);
-			dataset = DatasetHandlerAdapter.openDataset(req, res);
+			isAllowed(_allow, _metadataServiceType, res);
+			netCdfDataset = DatasetHandlerAdapter.openDataset(req, res);
 			res.setContentType("text/html");
 			Writer writer = new StringWriter();
-	
-			EnhancedMetadataService.enhance(dataset, writer, req);
+			//Get Thredds level metadata if it exists
+			InvDataset ids = this.getThreddsDataset(req);	
+			
+			EnhancedMetadataService.enhance(netCdfDataset, ids, writer);
 			String ncml = writer.toString();
 			writer.flush();
 			writer.close();
@@ -113,10 +111,12 @@ public class UddcController extends AbstractMetadataController {
 			res.getWriter().flush();
 
 		} catch (Exception e) {
-			_log.error("Error in UddcController:", e);
+			String errMsg = "Error in IsoController: " + req.getQueryString();
+			_log.error(errMsg, e);
+			try {this.returnError(errMsg, _metadataServiceType, res);} catch (Exception fe) {}
 
 		} finally {
-			DatasetHandlerAdapter.closeDataset(dataset);
+			DatasetHandlerAdapter.closeDataset(netCdfDataset);
 		}
 	}
 	

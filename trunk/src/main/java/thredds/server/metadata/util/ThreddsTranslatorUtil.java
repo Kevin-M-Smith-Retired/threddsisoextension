@@ -28,10 +28,10 @@
  */
 package thredds.server.metadata.util;
 
+import thredds.server.metadata.controller.IsoController;
 import thredds.server.metadata.exception.ThreddsUtilitiesException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
@@ -54,12 +54,12 @@ import java.io.Writer;
 
 /**
  * ThreddsTranslatorUtil
- * @author: rbaker
  * @author: dneufeld
- * Date: Apr 7, 2010
+ * Date: May 19, 2010
  */
 public class ThreddsTranslatorUtil {
-    private static final Logger _log = Logger.getLogger(ThreddsTranslatorUtil.class);
+	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
+	    .getLogger(ThreddsTranslatorUtil.class);
     private static final String _tempFileName = "theFile.out";
     private static final TransformerFactory transFact =  TransformerFactory.newInstance();
 
@@ -312,7 +312,8 @@ public class ThreddsTranslatorUtil {
 	        _log.error(err,te);
 	        throw new ThreddsUtilitiesException(err,te,ThreddsUtilitiesException.EXCEPTION_TYPES.TRANSFORMER_EXCEPTION);
 		} catch (FileNotFoundException fnfe) {
-			_log.error(fnfe);
+			String err = "FileNotFoundException in ThreddsTranslatorUtil: " + srcFile.getName();
+			_log.error(err, fnfe);
     	} finally {
             if(StringUtils.isEmpty(fileLocation)){
                 if(returnFile != null && returnFile.exists()){

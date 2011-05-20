@@ -39,7 +39,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -56,7 +55,8 @@ import org.jdom.xpath.XPath;
  * @author dneufeld
  */
 public class XMLUtil {
-	private static final Logger _log = Logger.getLogger(XMLUtil.class);
+	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
+        .getLogger(XMLUtil.class);
 	
 	private Document _doc = null;
 		
@@ -69,10 +69,10 @@ public class XMLUtil {
 		SAXBuilder saxBuilder = new SAXBuilder();
         try {				    
 		    _doc = saxBuilder.build(fileName);
-        } catch (JDOMException e) {
-	        _log.error(e);	
-        } catch (IOException e) {
-        	_log.error(e);		       
+        } catch (JDOMException jde) {
+	        _log.error("JDOMException in XMLUtil: ", jde);	
+        } catch (IOException ioe) {
+        	_log.error("IOException in XMLUtil: ", ioe);		       
         }
 	}
 	
@@ -85,10 +85,10 @@ public class XMLUtil {
 		SAXBuilder saxBuilder = new SAXBuilder();
         try {				   
 		    _doc = saxBuilder.build(is);
-        } catch (JDOMException e) {
-	        _log.error(e);	
-        } catch (IOException e) {
-        	_log.error(e);		       
+        } catch (JDOMException jde) {
+        	_log.error("JDOMException in XMLUtil: ", jde);	
+        } catch (IOException ioe) {
+        	_log.error("IOException in XMLUtil: ", ioe);		       
         }
 	}
 	
@@ -164,7 +164,7 @@ public class XMLUtil {
 			List<Element> list = x.selectNodes(_doc);
 			return list;
 		} catch (JDOMException e) {
-			_log.error(e);
+			_log.error("JDOMException in XMLUtil: ", e);
 			return null;
 		}
 
@@ -228,7 +228,7 @@ public class XMLUtil {
 	        FileWriter writer = new FileWriter(fileName);
 	        doWrite(writer);
 	    } catch (java.io.IOException e) {
-	        _log.error(e);
+	        _log.error("IOException in XMLUtil: ", e);
 	    }
 	}
 	
@@ -251,7 +251,7 @@ public class XMLUtil {
 	        outputter.output(_doc, writer);	
 
 	    } catch (java.io.IOException e) {
-	        _log.error(e);
+	        _log.error("IOException in XMLUtil: ", e);
 	    }		
 	}
 	
