@@ -35,16 +35,24 @@ import java.util.Date;
 import thredds.catalog.CollectionType;
 import thredds.catalog.DataFormatType;
 import thredds.catalog.InvAccess;
+import thredds.catalog.InvCatalog;
 import thredds.catalog.InvDataset;
+import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDocumentation;
+import thredds.catalog.InvMetadata;
+import thredds.catalog.InvProperty;
 import thredds.catalog.InvService;
 import thredds.catalog.ServiceType;
+import thredds.catalog.ThreddsMetadata;
 import thredds.server.metadata.bean.Extent;
+import thredds.server.metadata.exception.ThreddsUtilitiesException;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
+import ucar.nc2.units.TimeDuration;
 import ucar.unidata.util.StringUtil;
 
 import org.jdom.Element;
-import org.jdom.Attribute;
 import org.jdom.Namespace;
 
 /**
@@ -88,6 +96,8 @@ public class NCMLModifier {
         if (ext._heightUnits!=null) addElem(groupElem, "geospatial_vertical_units", ext._heightUnits);
         if (ext._heightRes!=null) addElem(groupElem, "geospatial_vertical_resolution", ext._heightRes.toString());
         if (ext._vOrientation!=null) addElem(groupElem, "geospatial_vertical_positive", ext._vOrientation);
+        
+        //TIME
         if (ext._minTime!=null) addElem(groupElem, "time_coverage_start", ext._minTime.toString());
         if (ext._maxTime!=null) addElem(groupElem, "time_coverage_end", ext._maxTime.toString());
         if (ext._timeUnits!=null) addElem(groupElem, "time_coverage_units", ext._timeUnits.toString());
@@ -109,7 +119,7 @@ public class NCMLModifier {
 	* @param ids the THREDDS dataset object retrieved from the catalog
 	* @param element the root XML element of the NCML document
 	*/			
-	public void addThreddsMetadata(final InvDataset ids, final Element groupElem) {
+	public void addThreddsMetadata(final InvDataset ids, final Element groupElem) throws Exception {
 	    if (ids.getID()!= null) addElem(groupElem, "id", ids.getID());		
 		if (ids.getFullName()!=null) addElem(groupElem, "full_name", ids.getFullName());
 	    if ((ids.getDataFormatType()!=null) && (ids.getDataFormatType() != DataFormatType.NONE)) 
@@ -119,29 +129,29 @@ public class NCMLModifier {
 	    if ((ids.getCollectionType() != null) && (ids.getCollectionType() != CollectionType.NONE))
 	    	addElem(groupElem, "collection_type", StringUtil.quoteXmlContent(ids.getCollectionType().toString()));
 	    if (ids.getAuthority() != null)
-	    	addElem(groupElem, "authority",StringUtil.quoteXmlContent(ids.getAuthority()));
+	    	addElem(groupElem, "authority", StringUtil.quoteXmlContent(ids.getAuthority()));
 	    
-	    //Use for lineage???  won't use unless we are looking for an explicit type?
-	    /*java.util.List<InvDocumentation> docs = ids.getDocumentation();
+	    //Use for lineage???  won't use unless we are looking for an explicit type? 
+	    java.util.List<InvDocumentation> docs = ids.getDocumentation();
 	    if (docs.size() > 0) {
+	      Element docsGrp = doAddGroupElem(groupElem, "documents");
 	      for (InvDocumentation doc : docs) {
+	    	Element docGrp = doAddGroupElem(docsGrp, "document");
 	        String type = (doc.getType() == null) ? "" : StringUtil.quoteXmlContent(doc.getType());
 	        String inline = doc.getInlineContent();
 	        String xlink = null;
 	        String xlinkTitle = null;
 	        if ((inline != null) && (inline.length() > 0))
 	          inline = StringUtil.quoteXmlContent(inline);
+	          addElem(docGrp, "inline", inline);	
 	        if (doc.hasXlink()) {
 	          xlink = doc.getXlinkHref();
 	          xlinkTitle = doc.getXlinkTitle();
+	          addElem(docGrp, "xlink", xlink, xlinkTitle);
 	        }
 	      }
-	    }*/
+	    }
 
-
-	    Attribute locAttr = groupElem.getAttribute("location");
-	    locAttr.setValue("Not provided because of security concers.");
-	    
 	    java.util.List<InvAccess> access = ids.getAccess();
 	    if (access.size() > 0) {
 
@@ -153,8 +163,8 @@ public class NCMLModifier {
 	          ServiceType stype = s.getServiceType();
 	          if ((stype == ServiceType.OPENDAP) || (stype == ServiceType.DODS)) {
 	            fullUrlString = fullUrlString + ".html";
-	            addElem(groupElem, "opendap_service", fullUrlString);	            
-	       	    locAttr.setValue(fullUrlString);	            
+	            addElem(groupElem, "opendap_service", fullUrlString);	             
+	       	    _openDapService = fullUrlString;
 	          } else if (stype == ServiceType.WCS) {
 	            fullUrlString = fullUrlString + "?service=WCS&version=1.0.0&request=GetCapabilities";
 	            addElem(groupElem, "wcs_service", fullUrlString);
@@ -168,33 +178,163 @@ public class NCMLModifier {
 	            fullUrlString = fullUrlString + "?req=form";
 	            addElem(groupElem, "cdmremote_service", fullUrlString);
 	          }
-	      }
-	      
-	    
+	      }	      	    
 	    }
-	
-        /*
-	    java.util.List<ThreddsMetadata.Contributor> contributors = ds.getContributors();
+	        
+	    java.util.List<ThreddsMetadata.Contributor> contributors = ids.getContributors();
 	    if (contributors.size() > 0) {
-	      buff.append("<h3>Contributors:</h3>\n<ul>\n");
+	      Element contributorsGrp = doAddGroupElem(groupElem, "contributors");
 	      for (ThreddsMetadata.Contributor t : contributors) {
-	        String role = (t.getRole() == null) ? "" : "<strong> (" + StringUtil.quoteHtmlContent(t.getRole()) + ")</strong> ";
-	        buff.append(" <li>").append(StringUtil.quoteHtmlContent(t.getName())).append(role).append("</li>\n");
+	    	Element contributorGrp = doAddGroupElem(contributorsGrp, "contributor");
+	        String role = (t.getRole() == null) ? "" : StringUtil.quoteXmlContent(t.getRole());
+	        addElem(contributorGrp, "role", role);
+	        String name = (t.getName() == null) ? "" : StringUtil.quoteXmlContent(t.getName());
+	        addElem(contributorGrp, "name", name);
 	      }
-	      buff.append("</ul>\n");
+	    }	    
+	    
+	    java.util.List<ThreddsMetadata.Vocab> keywords = ids.getKeywords();
+	    if (keywords.size() > 0) {
+	      Element keywordsGrp = doAddGroupElem(groupElem, "keywords");	     
+	      for (ThreddsMetadata.Vocab t : keywords) {
+	    	Element keywordGrp = doAddGroupElem(keywordsGrp, "keyword");	
+	    	String vocab = (t.getVocabulary() == null) ? "" : StringUtil.quoteXmlContent(t.getVocabulary());
+	    	String text = StringUtil.quoteXmlContent(t.getText());
+	        addElem(keywordGrp, vocab, text);      
+	      }
+	    }	    
+	    	
+	    java.util.List<DateType> dates = ids.getDates();
+	    if (dates.size() > 0) {
+	      Element datesGrp = doAddGroupElem(groupElem, "dates");
+	      for (DateType d : dates) {
+	        String type = (d.getType() == null) ? "" : StringUtil.quoteXmlContent(d.getType());
+	        String text = StringUtil.quoteXmlContent(d.getText());
+	        addElem(datesGrp, "date", text, type);  
+	      }
+	    }
+	    
+	    java.util.List<ThreddsMetadata.Vocab> projects = ids.getProjects();
+	    if (projects.size() > 0) {
+	      Element projectsGrp = doAddGroupElem(groupElem, "projects");
+	      for (ThreddsMetadata.Vocab t : projects) {
+	    	String vocab = (t.getVocabulary() == null) ? "" : StringUtil.quoteXmlContent(t.getVocabulary());
+	    	String text = StringUtil.quoteXmlContent(t.getText());
+	    	addElem(projectsGrp, vocab, text); 
+	      }
 	    }
 
-	    java.util.List<ThreddsMetadata.Vocab> keywords = ds.getKeywords();
-	    if (keywords.size() > 0) {
-	      buff.append("<h3>Keywords:</h3>\n<ul>\n");
-	      for (ThreddsMetadata.Vocab t : keywords) {
-	        String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
-	        buff.append(" <li>").append(StringUtil.quoteXmlContent(t.getText())).append(vocab).append("</li>\n");
+	    java.util.List<ThreddsMetadata.Source> creators = ids.getCreators();
+	    if (creators.size() > 0) {
+	      Element creatorsGrp = doAddGroupElem(groupElem, "creators");
+	      for (ThreddsMetadata.Source t : creators) {
+	    	Element creatorGrp = doAddGroupElem(creatorsGrp, "creator");
+	    	String name = StringUtil.quoteXmlContent(t.getName());
+	    	String email = StringUtil.quoteXmlContent(t.getEmail());	    	
+            String url = (t.getUrl() != null) ? "" : t.getUrl();	         	        
+	        addElem(creatorGrp, "name", name); 
+	        addElem(creatorGrp, "email", email);
+	        addElem(creatorGrp, "url", url);	        
 	      }
-	      buff.append("</ul>\n");
 	    }
-	    */
+	    
+	    java.util.List<ThreddsMetadata.Source> publishers = ids.getPublishers();
+	    if (publishers.size() > 0) {
+	      Element publishersGrp = doAddGroupElem(groupElem, "publishers");
+	      for (ThreddsMetadata.Source t : publishers) {
+	    	  Element publisherGrp = doAddGroupElem(publishersGrp, "publisher");  
+		      String name = StringUtil.quoteXmlContent(t.getName());
+		      String email = StringUtil.quoteXmlContent(t.getEmail());		        
+		      String url = (t.getUrl() != null) ? "" : t.getUrl();
+		      addElem(publisherGrp, "name", name); 
+		      addElem(publisherGrp, "email", email);
+		      addElem(publisherGrp, "url", url);
+	        }
+	    }
+	        
+	    ThreddsMetadata.GeospatialCoverage gc = ids.getGeospatialCoverage();
+	    if ((gc != null) && !gc.isEmpty()) {
+	        addElem(groupElem, "geospatial_lon_min", Double.toString(gc.getBoundingBox().getLonMin()));
+	        addElem(groupElem, "geospatial_lat_min", Double.toString(gc.getBoundingBox().getLatMin()));
+	        addElem(groupElem, "geospatial_lon_max", Double.toString(gc.getBoundingBox().getLonMax()));
+	        addElem(groupElem, "geospatial_lat_max", Double.toString(gc.getBoundingBox().getLatMax()));
+
+	        if (gc.getUpDownRange() != null) {
+
+	          double minHeight = 0.0;
+	          double maxHeight = 0.0;
+	          if (gc.getZPositiveUp()) {
+	              minHeight = gc.getHeightStart();
+	              maxHeight = minHeight + gc.getHeightExtent();
+	          } else {
+		          minHeight = gc.getHeightStart() * -1;
+		          maxHeight = minHeight - gc.getHeightExtent();
+	          }
+	          double heightRes = gc.getHeightResolution();
+	          String heightUnits = gc.getUpDownRange().getUnits();
+	          addElem(groupElem, "geospatial_vertical_min", Double.toString(minHeight));
+	          addElem(groupElem, "geospatial_vertical_max", Double.toString(maxHeight));
+              if (heightUnits!=null) addElem(groupElem, "geospatial_vertical_units", heightUnits);
+	          addElem(groupElem, "geospatial_vertical_resolution", Double.toString(heightRes));
+	          addElem(groupElem, "geospatial_vertical_positive", gc.getZPositive());
+	          
+	        }
+
+	        java.util.List<ThreddsMetadata.Vocab> nlist = gc.getNames();
+	        if ((nlist != null) && (nlist.size() > 0)) {
+	          Element vocabGrp = doAddGroupElem(groupElem, "vocab");
+	          for (ThreddsMetadata.Vocab elem : nlist) {
+	        	  addElem(vocabGrp, "name", StringUtil.quoteXmlContent(elem.getText()));
+	          }
+	        }
+	    }
 	
+	    DateRange tc = ids.getTimeCoverage();
+	    if (tc != null) {
+
+	      DateType start = tc.getStart();
+	      if ((start != null) && !start.isBlank())
+	    	  addElem(groupElem, "time_coverage_start", start.toDateTimeString());
+	      DateType end = tc.getEnd();
+	      if ((end != null) && !end.isBlank()) 
+	    	  addElem(groupElem, "time_coverage_end", end.toDateTimeString());
+
+	      TimeDuration resolution = tc.getResolution();
+	      if (tc.useResolution() && (resolution != null) && !resolution.isBlank()) {
+	    	  addElem(groupElem, "time_coverage_resolution", StringUtil.quoteXmlContent(resolution.toString()));
+	      }
+
+	    }
+
+	    
+	    java.util.List<InvMetadata> metadata = ids.getMetadata();
+	    boolean gotSomeMetadata = false;
+	    for (InvMetadata m : metadata) {
+	      if (m.hasXlink()) gotSomeMetadata = true;
+	    }
+
+	    if (gotSomeMetadata) {
+
+	      for (InvMetadata m : metadata) {
+	    	Element metaGrp = doAddGroupElem(groupElem, "metadata");
+	        String type = (m.getMetadataType() == null) ? "" : m.getMetadataType();
+	        if (m.hasXlink()) {
+	          String title = (m.getXlinkTitle() == null) ? "Type " + type : m.getXlinkTitle();
+	          addElem(metaGrp, title, m.getXlinkHref());
+	        } 
+	      }
+	    }
+
+	    java.util.List<InvProperty> props = ids.getProperties();
+	    if (props.size() > 0) {
+	      for (InvProperty p : props) {
+	    	Element propsGrp = doAddGroupElem(groupElem, "properties");
+	        addElem(propsGrp, p.getName(), p.getValue());
+	      }
+
+	    }
+	
+
 	}
 	
 
@@ -237,5 +377,29 @@ public class NCMLModifier {
 	
 	private void addElem(final Element rootElem, final String name, final String value, final String type) {
 		doAddElem(rootElem, name, value, type);
+	}
+	
+	/**
+	 * resolve reletive URLS against the catalog URL.
+	 *
+	 * @param ds   use ds parent catalog, if it exists
+	 * @param href URL to resolve
+	 * @return resolved URL
+	 */
+	static public String resolve(InvDataset ds, String href) {
+	  InvCatalog cat = ds.getParentCatalog();
+	  if (cat != null) {
+	    try {
+	      java.net.URI uri = cat.resolveUri(href);
+	      href = uri.toString();
+	    } catch (java.net.URISyntaxException e) {
+	      System.err.println("InvDatasetImpl.writeHtml: error parsing URL= " + href);
+	    }
+	  }
+	  return href;
+    }
+	
+	public String getOpenDapService() {
+		return this._openDapService;
 	}
 }

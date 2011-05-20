@@ -42,9 +42,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.log4j.Logger;
+import org.jdom.Attribute;
 import org.jdom.Element;
 
 /**
@@ -53,7 +51,8 @@ import org.jdom.Element;
 * Date: Jul 19, 2010
 */	
 public class EnhancedMetadataService {
-	private static final Logger _log = Logger.getLogger(EnhancedMetadataService.class);
+	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
+        .getLogger(EnhancedMetadataService.class);
 	
 	/** 
 	* Enhance NCML with Data Discovery conventions elements if not already in place in the metadata.
@@ -62,47 +61,38 @@ public class EnhancedMetadataService {
 	* @param writer writer to send enhanced NCML to
 	* @param req incoming URL request
 	*/	
-	public static void enhance(final NetcdfDataset dataset, final InvDataset ids, final Writer writer) {
+	public static void enhance(final NetcdfDataset dataset, final InvDataset ids, final Writer writer) throws Exception {
 		Extent ext = null;
 				
-		try {	
-	    	NCMLModifier ncmlMod = new NCMLModifier();
-	    	
-	    	//TODO replace with information from InvCatalogImpl
-	    	/*if (req!=null) {
-			    String baseUriString = req.getRequestURL().toString();
-			    String openDapService = null;
-			    if (baseUriString.contains("/ncml")) openDapService = baseUriString.replace("/ncml/", "/dodsC/");
-			    if (baseUriString.contains("/uddc")) openDapService = baseUriString.replace("/uddc/", "/dodsC/");
-			    if (baseUriString.contains("/iso")) openDapService = baseUriString.replace("/iso/", "/dodsC/");
+    	NCMLModifier ncmlMod = new NCMLModifier();
+    	
+		ext = ThreddsExtentUtil.getExtent(dataset);
+		
+        NcMLWriter ncMLWriter = new NcMLWriter();        	
+		String ncml = ncMLWriter.writeXML(dataset);
+		InputStream ncmlIs = new ByteArrayInputStream(ncml.getBytes("UTF-8"));
+    	XMLUtil xmlUtil = new XMLUtil(ncmlIs);
+    	
+    	//Needed????????????
+    	List<Element> childElems = xmlUtil.elemFinder("//ncml:attribute", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");	    	
+    	
+    	List<Element> list = xmlUtil.elemFinder("//ncml:netcdf", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");
+    	Element rootElem = list.get(0);
+    	Element cfGroupElem = ncmlMod.doAddGroupElem(rootElem, "CFMetadata");
+    	ncmlMod.addCFMetdata(ext, cfGroupElem);
+    	
+    	if (ids!=null) {
+    	    Element threddsGroupElem = ncmlMod.doAddGroupElem(rootElem, "THREDDSMetadata");
+    	    ncmlMod.addThreddsMetadata(ids, threddsGroupElem);
+    	}
+	    
+    	Attribute locAttr = rootElem.getAttribute("location");
+	    String openDapService = (ncmlMod.getOpenDapService()!=null) ? "Not provided because of security concers." : ncmlMod.getOpenDapService();
+	    locAttr.setValue(openDapService);
+	    
+		xmlUtil.sortElements(rootElem, new ElementNameComparator());
+    	xmlUtil.write(writer);				
 
-			    ncmlMod.setOpenDapService(openDapService);
-	    	}*/
-	    	
-			ext = ThreddsExtentUtil.getExtent(dataset);
-			
-	        NcMLWriter ncMLWriter = new NcMLWriter();        	
-			String ncml = ncMLWriter.writeXML(dataset);
-			InputStream ncmlIs = new ByteArrayInputStream(ncml.getBytes("UTF-8"));
-	    	XMLUtil xmlUtil = new XMLUtil(ncmlIs);
-	    	
-	    	//Needed????????????
-	    	List<Element> childElems = xmlUtil.elemFinder("//ncml:attribute", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");	    	
-	    	
-	    	List<Element> list = xmlUtil.elemFinder("//ncml:netcdf", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");
-	    	Element rootElem = list.get(0);
-	    	Element cfGroupElem = ncmlMod.doAddGroupElem(rootElem, "CFMetadata");
-	    	ncmlMod.addCFMetdata(ext, cfGroupElem);
-	    	
-	    	if (ids!=null) {
-	    	    Element threddsGroupElem = ncmlMod.doAddGroupElem(rootElem, "THREDDSMetadata");
-	    	    ncmlMod.addThreddsMetadata(ids, threddsGroupElem);
-	    	}
-			xmlUtil.sortElements(rootElem, new ElementNameComparator());
-	    	xmlUtil.write(writer);				
-		} catch (Exception e) {
-			_log.error("EnhancedMetadataService error:", e);
-		}
 
 	}
 

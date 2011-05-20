@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
+import thredds.catalog.InvDataset;
 import thredds.server.metadata.service.EnhancedMetadataService;
 import thredds.server.metadata.util.DatasetHandlerAdapter;
 import thredds.server.metadata.util.ThreddsTranslatorUtil;
@@ -57,21 +58,17 @@ import ucar.nc2.dataset.NetcdfDataset;
 @RequestMapping("/iso")
 public class IsoController extends AbstractMetadataController {
 	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
-			.getLogger(IsoController.class);
-	private static org.slf4j.Logger _logServerStartup = org.slf4j.LoggerFactory
-			.getLogger("serverStartup");
-	
-	private boolean allow = false;
-	private String metadataServiceType = "ISO"; 
-	
+	    .getLogger(IsoController.class);
+
 	protected String getPath() {
-		return metadataServiceType + "/";
+		return _metadataServiceType + "/";
 	}
 
 	public void init() throws ServletException {
+		_metadataServiceType = "ISO"; 
 		_logServerStartup.info("Metadata ISO - initialization start");
-		allow = ThreddsConfig.getBoolean("NCISO.isoAllow", false);
-	    _logServerStartup.info("NCISO.isoAllow= "+allow);		
+		_allow = ThreddsConfig.getBoolean("NCISO.isoAllow", false);
+	    _logServerStartup.info("NCISO.isoAllow= "+ _allow);		
 	}
 
 	public void destroy() {
@@ -92,14 +89,19 @@ public class IsoController extends AbstractMetadataController {
 			final HttpServletResponse res) throws ServletException, IOException {
 		_log.info("Handling ISO metadata request.");
 
-		NetcdfDataset dataset = null;
+		NetcdfDataset netCdfDataset = null;
 
 		try {			
-			isAllowed(allow, metadataServiceType, res);			
-			dataset = DatasetHandlerAdapter.openDataset(req, res);
+			isAllowed(_allow, _metadataServiceType, res);			
+			netCdfDataset = DatasetHandlerAdapter.openDataset(req, res);
 			res.setContentType("text/xml");
 			Writer writer = new StringWriter();
-			EnhancedMetadataService.enhance(dataset, writer, req);			
+			//Get Thredds level metadata if it exists
+			InvDataset ids = this.getThreddsDataset(req);	
+			
+			//Enhance with file and dataset level metadata
+			EnhancedMetadataService.enhance(netCdfDataset, ids, writer);
+			
 			String ncml = writer.toString();
 			writer.flush();
 			writer.close();
@@ -110,10 +112,12 @@ public class IsoController extends AbstractMetadataController {
 			res.getWriter().flush();
 
 		} catch (Exception e) {
-			_log.error("Error in IsoController:", e);
+			String errMsg = "Error in IsoController: " + req.getQueryString();
+			_log.error(errMsg, e);
+			try {this.returnError(errMsg, _metadataServiceType, res);} catch (Exception fe) {}
 
 		} finally {
-			DatasetHandlerAdapter.closeDataset(dataset);
+			DatasetHandlerAdapter.closeDataset(netCdfDataset);
 		}
 		
 	}

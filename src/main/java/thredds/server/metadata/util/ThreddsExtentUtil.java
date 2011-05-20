@@ -30,12 +30,10 @@ package thredds.server.metadata.util;
 
 import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import thredds.server.metadata.bean.Extent;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
-import org.apache.log4j.Logger;
 
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -49,8 +47,8 @@ import ucar.nc2.units.DateFormatter;
 * Date: June 17, 2010
 */
 public class ThreddsExtentUtil {
-	private static final Logger _log = Logger
-			.getLogger(ThreddsExtentUtil.class);
+	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
+        .getLogger(ThreddsExtentUtil.class);
 	
 	private static Extent doGetExtent(final String url) throws Exception {
 		Extent ext = null;
@@ -75,7 +73,7 @@ public class ThreddsExtentUtil {
 			for (CoordinateAxis coordAxis : coordAxes) {
 				
 				if (coordAxis.getAxisType() == AxisType.Lat) {
-					logAvailableMemory("Retrieving Lat coordAxis values");
+					//logAvailableMemory("Retrieving Lat coordAxis values");
 					ext._minLat = coordAxis.getMinValue();
 					ext._maxLat = coordAxis.getMaxValue();
 					ext._latUnits = coordAxis.getUnitsString();
@@ -83,7 +81,7 @@ public class ThreddsExtentUtil {
 							.getMinValue()) / coordAxis.getSize());
 				}
 				if (coordAxis.getAxisType() == AxisType.Lon) {
-					logAvailableMemory("Retrieving Lon coordAxis values");
+					//logAvailableMemory("Retrieving Lon coordAxis values");
 					ext._minLon = coordAxis.getMinValue();
 					ext._maxLon = coordAxis.getMaxValue();
 					ext._lonUnits = coordAxis.getUnitsString();
@@ -91,13 +89,11 @@ public class ThreddsExtentUtil {
 							.getMinValue()) / coordAxis.getSize());
 				}
 				if (coordAxis.getAxisType() == AxisType.Time) {
-					logAvailableMemory("Retrieving Time coordAxis values");
+					//logAvailableMemory("Retrieving Time coordAxis values");
 					ext._minTime = Double.toString(coordAxis.getMinValue());
 					ext._maxTime = Double.toString(coordAxis.getMaxValue());
 					ext._timeUnits = coordAxis.getUnitsString();
 					
-					StringTokenizer st = new StringTokenizer(ext._timeUnits);
-					String timeUnitsToken = st.nextToken();
 
 					//Add 2/8/2011
 					String rawMinTime = Double.toString(coordAxis.getMinValue());
@@ -166,7 +162,7 @@ public class ThreddsExtentUtil {
 		int mb = 1024*1024;
 		
 		_log.info(message);
-		_log.info("Total Memory: "+Runtime.getRuntime().totalMemory()/mb);    
-		_log.info("Free Memory: "+Runtime.getRuntime().freeMemory()/mb);
+		_log.info("Total Memory: "+ Runtime.getRuntime().totalMemory()/mb);    
+		_log.info("Free Memory: "+ Runtime.getRuntime().freeMemory()/mb);
 	}
 }

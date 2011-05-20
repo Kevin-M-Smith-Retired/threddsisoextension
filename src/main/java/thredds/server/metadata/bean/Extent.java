@@ -28,15 +28,14 @@
  */
 package thredds.server.metadata.bean;
 
-import org.apache.log4j.Logger;
-
 /**
  * Extent
  * Author: dneufeld Date: Jun 12, 2010
  * <p/>
  */
 public class Extent {
-	private static final Logger _log = Logger.getLogger(Extent.class);
+	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
+        .getLogger(Extent.class);
     public Double _minLat = null;
     public Double _maxLat = null;
     public Double _minLon = null;
