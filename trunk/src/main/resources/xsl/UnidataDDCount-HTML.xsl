@@ -2,14 +2,13 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:nc="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
 	<xd:doc xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" scope="stylesheet">
 		<xd:desc>
-			<xd:p><xd:b>Created on:</xd:b> August 20, 2010</xd:p>
+			<xd:p><xd:b>Created on:</xd:b> April 13, 2011</xd:p>
 			<xd:p><xd:b>Author:</xd:b>ted.habermann@noaa.gov</xd:p>
 			<xd:p/>
 		</xd:desc>
 	</xd:doc>
-	<xsl:variable name="rubricVersion" select="'1.0.0'"/>
-	
-	<xsl:output method="xml"/>
+	<xsl:variable name="rubricVersion" select="'1.1'"/>
+	<xsl:output method="xml" indent="yes"/>
 	<xsl:template name="showScore">
 		<xsl:param name="score"/>
 		<xsl:choose>
@@ -130,7 +129,7 @@
 		<xsl:variable name="idCnt" select="count(/nc:netcdf/nc:attribute[@name='id'])"/>
 		<xsl:variable name="identifierNameSpaceCnt" select="count(/nc:netcdf/nc:attribute[@name='naming_authority'])"/>
 		<xsl:variable name="metadataConventionCnt" select="count(/nc:netcdf/nc:attribute[@name='Metadata_Conventions'])"/>
-		<xsl:variable name="metadataLinkCnt" select="count(/nc:netcdf/nc:attribute[@name='Metadata_Link'])"/>
+		<xsl:variable name="metadataLinkCnt" select="count(/nc:netcdf/nc:attribute[@name='Metadata_Link'])+count(/nc:netcdf/nc:attribute[@name='metadata_link'])"/>
 		<xsl:variable name="identifierTotal" select="$idCnt + $identifierNameSpaceCnt + $metadataConventionCnt + $metadataLinkCnt"/>
 		<xsl:variable name="identifierMax">4</xsl:variable>
 		<!-- Text Search Fields: 7 possible -->
@@ -144,26 +143,26 @@
 		<xsl:variable name="textSearchTotal" select="$titleCnt + $summaryCnt + $keywordsCnt + $keywordsVocabCnt      + $stdNameVocabCnt + $commentCnt + $historyCnt"/>
 		<xsl:variable name="textSearchMax">7</xsl:variable>
 		<!-- Extent Search Fields: 17 possible -->
-		<xsl:variable name="geospatial_lat_minCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_lat_min'])"/>
-		<xsl:variable name="geospatial_lat_maxCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_lat_max'])"/>
-		<xsl:variable name="geospatial_lon_minCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_lon_min'])"/>
-		<xsl:variable name="geospatial_lon_maxCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_lon_max'])"/>
-		<xsl:variable name="timeStartCnt" select="count(/nc:netcdf/nc:attribute[@name='time_coverage_start'])"/>
-		<xsl:variable name="timeEndCnt" select="count(/nc:netcdf/nc:attribute[@name='time_coverage_end'])"/>
-		<xsl:variable name="vertical_minCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_vertical_min'])"/>
-		<xsl:variable name="vertical_maxCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_vertical_max'])"/>
+		<xsl:variable name="geospatial_lat_minCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_min'])"/>
+		<xsl:variable name="geospatial_lat_maxCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_max'])"/>
+		<xsl:variable name="geospatial_lon_minCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lon_min'])"/>
+		<xsl:variable name="geospatial_lon_maxCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lon_max'])"/>
+		<xsl:variable name="timeStartCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_start'])"/>
+		<xsl:variable name="timeEndCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_end'])"/>
+		<xsl:variable name="vertical_minCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_min'])"/>
+		<xsl:variable name="vertical_maxCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_max'])"/>
 		<xsl:variable name="extentTotal" select="$geospatial_lat_minCnt + $geospatial_lat_maxCnt + $geospatial_lon_minCnt + $geospatial_lon_maxCnt     + $timeStartCnt + $timeEndCnt + $vertical_minCnt + $vertical_maxCnt"/>
 		<xsl:variable name="extentMax">8</xsl:variable>
 		<!--  -->
-		<xsl:variable name="geospatial_lat_unitsCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_lat_units'])"/>
-		<xsl:variable name="geospatial_lat_resolutionCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_lat_resolution'])"/>
-		<xsl:variable name="geospatial_lon_unitsCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_lon_units'])"/>
-		<xsl:variable name="geospatial_lon_resolutionCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_lon_resolution'])"/>
-		<xsl:variable name="timeResCnt" select="count(/nc:netcdf/nc:attribute[@name='time_coverage_resolution'])"/>
-		<xsl:variable name="timeDurCnt" select="count(/nc:netcdf/nc:attribute[@name='time_coverage_duration'])"/>
-		<xsl:variable name="vertical_unitsCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_vertical_units'])"/>
-		<xsl:variable name="vertical_resolutionCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_vertical_resolution'])"/>
-		<xsl:variable name="vertical_positiveCnt" select="count(/nc:netcdf/nc:attribute[@name='geospatial_vertical_positive'])"/>
+		<xsl:variable name="geospatial_lat_unitsCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_units'])"/>
+		<xsl:variable name="geospatial_lat_resolutionCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_resolution'])"/>
+		<xsl:variable name="geospatial_lon_unitsCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lon_units'])"/>
+		<xsl:variable name="geospatial_lon_resolutionCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lon_resolution'])"/>
+		<xsl:variable name="timeResCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_resolution'])"/>
+		<xsl:variable name="timeDurCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_duration'])"/>
+		<xsl:variable name="vertical_unitsCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_units'])"/>
+		<xsl:variable name="vertical_resolutionCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_resolution'])"/>
+		<xsl:variable name="vertical_positiveCnt" select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_positive'])"/>
 		<xsl:variable name="otherExtentTotal"
 			select="$geospatial_lat_resolutionCnt + $geospatial_lat_unitsCnt     + $geospatial_lon_resolutionCnt + $geospatial_lon_unitsCnt     + $timeResCnt + $timeDurCnt     + $vertical_unitsCnt + $vertical_resolutionCnt + $vertical_positiveCnt"/>
 		<xsl:variable name="otherExtentMax">9</xsl:variable>
@@ -209,8 +208,8 @@
 				}</style>
 			<h1>NetCDF Attribute Convention for Dataset Discovery Report</h1>
 			<xsl:variable name="titleAttribute" select="/nc:netcdf/nc:attribute[@name='title']"/> The Unidata Attribute Convention for Data Discovery provides recommendations for netCDF attributes that can be added to netCDF files to
-			facilitate discovery of those files using standard metadata searches. This tool tests conformance with those recommendations. More <a
-				href="https://www.nosc.noaa.gov/dmc/swg/wiki/index.php?title=NetCDF_Attribute_Convention_for_Dataset_Discovery#Conformance_Test">Information on Convention and Tool</a>. <h2> Title: <xsl:value-of
+			facilitate discovery of those files using standard metadata searches. This tool tests conformance with those recommendations using this <a href="http://www.ngdc.noaa.gov/metadata/published/xsl/UnidataDDCount-HTML.xsl">stylesheet</a>. More <a
+				href="https://geo-ide.noaa.gov/wiki/index.php?title=NetCDF_Attribute_Convention_for_Dataset_Discovery#Conformance_Test">Information on Convention and Tool</a>. <h2> Title: <xsl:value-of
 					select="$titleAttribute/@value"/>
 			</h2>
 			<h2>Total Score: <xsl:value-of select="$spiralTotal"/>/<xsl:value-of select="$spiralMax"/></h2>
@@ -349,7 +348,7 @@
 					<xsl:call-template name="showScore">
 						<xsl:with-param name="score" select="$metadataLinkCnt"/>
 					</xsl:call-template>
-					<td valign="top">Metadata_Link</td>
+					<td valign="top">Metadata_Link or metadata_link</td>
 					<td valign="top">This attribute provides a link to a complete metadata record for this dataset or the collection that contains this dataset. <i>This attribute is not included in Version 1 of the Unidata Attribute
 							Convention for Data Discovery. It is recommended here because a complete metadata collection for a dataset will likely contain more information than can be included in granule formats. This attribute contains a
 							link to that information.</i></td>
@@ -785,7 +784,8 @@
 					<td valign="top">The scientific project that produced the data.<br/></td>
 					<td valign="top">metadata/project<br/></td>
 					<td valign="top">/gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo/gmd:MD_AggregateInformation/gmd:aggregateDataSetName/gmd:CI_Citation/gmd:title/gco:CharacterString<br/>
-						DS_AssociationTypeCode="largerWorkCitation" and DS_InitiativeTypeCode="project"</td>
+						DS_AssociationTypeCode="largerWorkCitation" and DS_InitiativeTypeCode="project"<br/>and/or<br/>						
+						/gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword/gco:CharacterString with gmd:MD_KeywordTypeCode="project" </td>
 				</tr>
 				<tr>
 					<xsl:call-template name="showScore">
@@ -861,7 +861,8 @@
 					<td rowspan="3" colspan="1" valign="top">The data publisher's name, URL, and email. The publisher may be an individual or an institution.</td>
 					<td valign="top">metadata/publisher/name<br/></td>
 					<td valign="top">/gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:citedResponsibleParty/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString<br/>
-						CI_RoleCode="publisher"</td>
+						CI_RoleCode="publisher"<br/>and/or<br/>						
+						/gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword/gco:CharacterString with gmd:MD_KeywordTypeCode="dataCenter" </td>
 				</tr>
 				<tr>
 					<xsl:call-template name="showScore">
@@ -942,7 +943,7 @@
 			
 			<hr/>
 			Rubric Version: <xsl:value-of select="$rubricVersion"/><br/>
-			<a href="https://www.nosc.noaa.gov/dmc/swg/wiki/index.php?title=NetCDF_Attribute_Convention_for_Dataset_Discovery">More Information</a>			
+			<a href="https://geo-ide.noaa.gov/wiki/index.php?title=NetCDF_Attribute_Convention_for_Dataset_Discovery">More Information</a>			
 		</html>
 	</xsl:template>
 </xsl:stylesheet>
