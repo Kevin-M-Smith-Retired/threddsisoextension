@@ -107,8 +107,10 @@ public class ThreddsExtentUtil {
 					//End Add 2/8/2011
 					
 					//Revised to get ISO Duration format
+					long resolution = (endDate.getTime() - startDate.getTime())/coordAxis.getSize();
 					long duration = endDate.getTime() - startDate.getTime();
-					ext._timeRes = DurationFormatUtils.formatDurationISO(duration);
+					ext._timeRes = DurationFormatUtils.formatDurationISO(resolution);
+					ext._timeDuration = DurationFormatUtils.formatDurationISO(duration);
 
 				}
 			

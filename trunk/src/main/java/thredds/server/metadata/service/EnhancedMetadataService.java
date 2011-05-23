@@ -73,13 +73,13 @@ public class EnhancedMetadataService {
 		InputStream ncmlIs = new ByteArrayInputStream(ncml.getBytes("UTF-8"));
     	XMLUtil xmlUtil = new XMLUtil(ncmlIs);
     	
-    	//Needed????????????
-    	List<Element> childElems = xmlUtil.elemFinder("//ncml:attribute", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");	    	
-    	
     	List<Element> list = xmlUtil.elemFinder("//ncml:netcdf", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");
     	Element rootElem = list.get(0);
     	Element cfGroupElem = ncmlMod.doAddGroupElem(rootElem, "CFMetadata");
     	ncmlMod.addCFMetdata(ext, cfGroupElem);
+    	
+    	Element ncIsoGroupElem = ncmlMod.doAddGroupElem(rootElem, "NCISOMetadata");
+    	ncmlMod.addNcIsoMetadata(ncIsoGroupElem);
     	
     	if (ids!=null) {
     	    Element threddsGroupElem = ncmlMod.doAddGroupElem(rootElem, "THREDDSMetadata");
@@ -87,7 +87,7 @@ public class EnhancedMetadataService {
     	}
 	    
     	Attribute locAttr = rootElem.getAttribute("location");
-	    String openDapService = (ncmlMod.getOpenDapService()!=null) ? "Not provided because of security concers." : ncmlMod.getOpenDapService();
+	    String openDapService = (ncmlMod.getOpenDapService()==null) ? "Not provided because of security concerns." : ncmlMod.getOpenDapService();
 	    locAttr.setValue(openDapService);
 	    
 		xmlUtil.sortElements(rootElem, new ElementNameComparator());
