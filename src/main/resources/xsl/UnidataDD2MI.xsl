@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd"
   xmlns:gmi="http://www.isotc211.org/2005/gmi" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gss="http://www.isotc211.org/2005/gss"
-  xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gml="http://www.opengis.net/gml" xmlns:gmd2="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:nc="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
   <xd:doc xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" scope="stylesheet">
     <xd:desc>
-      <xd:p><xd:b>Created on:</xd:b>February 18, 2011</xd:p>
+      <xd:p><xd:b>Created on:</xd:b>April 15, 2011</xd:p>
       <xd:p><xd:b>Author:</xd:b>ted.habermann@noaa.gov</xd:p>
       <xd:p/>
     </xd:desc>
   </xd:doc>
-  <xsl:variable name="stylesheetVersion" select="'2.0.5'"/>
+  <xsl:variable name="stylesheetVersion" select="'2.1.0'"/>
   <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
   <xsl:variable name="globalAttributeCnt" select="count(/nc:netcdf/nc:attribute)"/>
   <xsl:variable name="variableCnt" select="count(/nc:netcdf/nc:variable)"/>
@@ -159,9 +159,9 @@
         </xsl:attribute>
       </gmd:contact>
       <gmd:dateStamp>
-        <xsl:attribute name="gco:nilReason">
-          <xsl:value-of select="'unknown'"/>
-        </xsl:attribute>
+        <gco:Date>
+          <xsl:value-of select="/nc:netcdf/nc:attribute[@name='thredds_nciso_metadata_creation']/@value"/>
+        </gco:Date>
       </gmd:dateStamp>
       <gmd:metadataStandardName>
         <gco:CharacterString>ISO 19115-2 Geographic Information - Metadata Part 2 Extensions for imagery and gridded data</gco:CharacterString>
@@ -302,7 +302,7 @@
                 </xsl:choose>
               </gmd:identifier>
               <xsl:choose>
-                <xsl:when test="$responsiblePartyCnt">
+                <xsl:when test="$creatorTotal + $contributorTotal">
                   <xsl:if test="$creatorTotal">
                     <xsl:call-template name="writeResponsibleParty">
                       <xsl:with-param name="tagName" select="'gmd:citedResponsibleParty'"/>
@@ -600,12 +600,26 @@
                       <gmd:EX_VerticalExtent>
                         <gmd:minimumValue>
                           <gco:Real>
-                            <xsl:value-of select="/nc:netcdf/nc:attribute[@name='geospatial_vertical_min']/@value"/>
+                            <xsl:choose>
+                              <xsl:when test="/nc:netcdf/nc:attribute[@name='geospatial_vertical_positive']/@value = 'down'">
+                                <xsl:value-of select="/nc:netcdf/nc:attribute[@name='geospatial_vertical_min']/@value * -1"/>
+                              </xsl:when>
+                              <xsl:otherwise>
+                                <xsl:value-of select="/nc:netcdf/nc:attribute[@name='geospatial_vertical_min']/@value"/>
+                              </xsl:otherwise>   
+                            </xsl:choose>
                           </gco:Real>
                         </gmd:minimumValue>
                         <gmd:maximumValue>
                           <gco:Real>
-                            <xsl:value-of select="/nc:netcdf/nc:attribute[@name='geospatial_vertical_max']/@value"/>
+                            <xsl:choose>
+                              <xsl:when test="/nc:netcdf/nc:attribute[@name='geospatial_vertical_positive']/@value = 'down'">
+                                <xsl:value-of select="/nc:netcdf/nc:attribute[@name='geospatial_vertical_max']/@value * -1"/>
+                              </xsl:when>
+                              <xsl:otherwise>
+                                <xsl:value-of select="/nc:netcdf/nc:attribute[@name='geospatial_vertical_max']/@value"/>
+                              </xsl:otherwise>   
+                            </xsl:choose>
                           </gco:Real>
                         </gmd:maximumValue>
                         <gmd:verticalCRS>
@@ -728,7 +742,7 @@
                             <gco:CharacterString>File Information</gco:CharacterString>
                           </gmd:name>
                           <gmd:description>
-                            <gco:CharacterString>This URL provides a complete description of the data file. Change the extension to .html for an OPeNDAP query interface</gco:CharacterString>
+                            <gco:CharacterString>This URL provides a standard OPeNDAP html interface for selecting data from this dataset. Change the extension to .info for a description of the dataset.</gco:CharacterString>
                           </gmd:description>
                           <gmd:function>
                             <gmd:CI_OnLineFunctionCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="download">download</gmd:CI_OnLineFunctionCode>
@@ -1272,3 +1286,4 @@
     </gmd:identificationInfo>
   </xsl:template>
 </xsl:stylesheet>
+
