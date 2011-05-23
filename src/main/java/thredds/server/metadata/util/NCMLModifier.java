@@ -37,7 +37,6 @@ import thredds.catalog.DataFormatType;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvDataset;
-import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDocumentation;
 import thredds.catalog.InvMetadata;
 import thredds.catalog.InvProperty;
@@ -45,7 +44,7 @@ import thredds.catalog.InvService;
 import thredds.catalog.ServiceType;
 import thredds.catalog.ThreddsMetadata;
 import thredds.server.metadata.bean.Extent;
-import thredds.server.metadata.exception.ThreddsUtilitiesException;
+import thredds.server.metadata.service.EnhancedMetadataService;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -61,7 +60,9 @@ import org.jdom.Namespace;
 * Date: Jun 6, 2010
 */
 public class NCMLModifier {
-
+	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
+    .getLogger(NCMLModifier.class);
+	
     private String _openDapService = null;
     
    /** 
@@ -102,15 +103,7 @@ public class NCMLModifier {
         if (ext._maxTime!=null) addElem(groupElem, "time_coverage_end", ext._maxTime.toString());
         if (ext._timeUnits!=null) addElem(groupElem, "time_coverage_units", ext._timeUnits.toString());
         if (ext._timeRes!=null) addElem(groupElem, "time_coverage_resolution", ext._timeRes.toString());
-        
-
-   	    
-        // Add date stamp for metadata creation
-		Date dateStamp = Calendar.getInstance().getTime();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String metadata_creation_date = sdf.format(dateStamp);
-        addElem(groupElem,"thredds_nciso_metadata_creation", metadata_creation_date);
-
+        if (ext._timeRes!=null) addElem(groupElem, "time_coverage_duration", ext._timeDuration.toString());
 	}
 	
 	/** 
@@ -154,29 +147,30 @@ public class NCMLModifier {
 
 	    java.util.List<InvAccess> access = ids.getAccess();
 	    if (access.size() > 0) {
-
+	    	Element servicesGrp = doAddGroupElem(groupElem, "services");
 	      for (InvAccess a : access) {
 	        InvService s = a.getService();
 	        String urlString = a.getStandardUrlName();
 
 	        String fullUrlString = urlString;
 	          ServiceType stype = s.getServiceType();
+	          _log.info("THREDDS service type=" + stype);
 	          if ((stype == ServiceType.OPENDAP) || (stype == ServiceType.DODS)) {
 	            fullUrlString = fullUrlString + ".html";
-	            addElem(groupElem, "opendap_service", fullUrlString);	             
+	            addElem(servicesGrp, "opendap_service", fullUrlString);	             
 	       	    _openDapService = fullUrlString;
 	          } else if (stype == ServiceType.WCS) {
 	            fullUrlString = fullUrlString + "?service=WCS&version=1.0.0&request=GetCapabilities";
-	            addElem(groupElem, "wcs_service", fullUrlString);
+	            addElem(servicesGrp, "wcs_service", fullUrlString);
 	          } else if (stype == ServiceType.WMS) {
 	            fullUrlString = fullUrlString + "?service=WMS&version=1.3.0&request=GetCapabilities";
-	            addElem(groupElem, "wms_service", fullUrlString);
+	            addElem(servicesGrp, "wms_service", fullUrlString);
 	          } else if (stype == ServiceType.NetcdfSubset) {
 	            fullUrlString = fullUrlString + "/dataset.html";
-	            addElem(groupElem, "nccs_service", fullUrlString);	          
+	            addElem(servicesGrp, "nccs_service", fullUrlString);	          
 	          } else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature)) {
 	            fullUrlString = fullUrlString + "?req=form";
-	            addElem(groupElem, "cdmremote_service", fullUrlString);
+	            addElem(servicesGrp, "cdmremote_service", fullUrlString);
 	          }
 	      }	      	    
 	    }
@@ -331,13 +325,21 @@ public class NCMLModifier {
 	    	Element propsGrp = doAddGroupElem(groupElem, "properties");
 	        addElem(propsGrp, p.getName(), p.getValue());
 	      }
-
-	    }
-	
-
+	    }	
 	}
 	
-
+	/** 
+	* Update the NCML document by adding ncISO specific metadata
+	* 
+	* @param element the group XML element of the NCML document
+	*/			
+	public void addNcIsoMetadata(final Element groupElem) {
+        // Add date stamp for metadata creation
+		Date dateStamp = Calendar.getInstance().getTime();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String metadata_creation_date = sdf.format(dateStamp);
+        addElem(groupElem,"thredds_nciso_metadata_creation", metadata_creation_date);      
+	}
 	
 	private Element newGroupElement() {
 		return new Element("group");

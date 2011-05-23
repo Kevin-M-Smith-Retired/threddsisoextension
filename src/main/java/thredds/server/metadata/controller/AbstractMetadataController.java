@@ -54,11 +54,6 @@ public abstract class AbstractMetadataController implements IMetadataContoller {
 	* @param request incoming url request 
 	*/	
     protected InvDataset getThreddsDataset(final HttpServletRequest req) {
-        /*Test values
-        catalogPath = "catalog.xml";
-        catalogString = "http://localhost:8080/thredds/";
-        invDatasetString = "testCRMdataset";
-        */
     	
     	InvCatalog catalog = null;
     	InvDataset ids = null;
@@ -67,22 +62,32 @@ public abstract class AbstractMetadataController implements IMetadataContoller {
         String catalogPath = null; 
         String catalogUri = null;
         
-
     	try
         {  
     	  catalogPath = catalogString.substring(catalogString.lastIndexOf("/")+1,catalogString.length()-4)+"xml";	
           catalogUri = catalogString.substring(0,catalogString.lastIndexOf("/"));
-    	  _log.info("ncISO catalogPath=" + catalogPath +"; " + "catalogUri=" +catalogUri + "; dataset=" + invDatasetString);
-           // Check for matching catalog.
-          
-          DataRootHandler drh = DataRootHandler.getInstance();          	
+    	  
+          _log.debug("ncISO catalogPath=" + catalogPath +"; " + "catalogUri=" +catalogUri + "; dataset=" + invDatasetString);
+          // Check for matching dataset and catalog.    
+    	  
+    	  // Handle datasetScan
+          String datasetId = (invDatasetString.lastIndexOf("/")>-1) ? invDatasetString.substring(0,(invDatasetString.lastIndexOf("/"))) : invDatasetString;
+    	  DataRootHandler drh = DataRootHandler.getInstance();          
+    	  
           catalog = drh.getCatalog( catalogPath, new URI( catalogString ) );
-          ids = catalog.findDatasetByID(invDatasetString);
+          if (catalog==null) {
+        	  _log.debug("catalog is null.");
+          } else {
+        	  _log.debug("catalog name: " + catalog.getName());
+          }
+          ids = (InvDataset) catalog.findDatasetByID(datasetId);
           
           if (ids!=null) {
-            _log.info("Dataset information retrieved via ncISO!"
+            _log.debug("Dataset information retrieved!"
             + ids.getCatalogUrl() + "; id=" + ids.getName());          
-          }          
+          } else {
+        	_log.debug("Dataset not found!: " + datasetId);
+          }
         }
     	catch ( NullPointerException npe) {
     	    _log.error( "NullPointer - getTDSMetadata failed: ", npe );
@@ -91,6 +96,10 @@ public abstract class AbstractMetadataController implements IMetadataContoller {
         {
           String msg = "Bad URI syntax [" + catalogString + "]: " + e.getMessage();
             _log.error( msg + " getTDSMetadata failed: ", e );          
+        } catch ( Exception e )
+        {
+            String msg = e.getMessage();
+              _log.error( msg + " getTDSMetadata failed: ", e );          
         } 
         return ids;
         
