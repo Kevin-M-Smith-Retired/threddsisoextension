@@ -71,7 +71,7 @@ public abstract class AbstractMetadataController implements IMetadataContoller {
           // Check for matching dataset and catalog.    
     	  
     	  // Handle datasetScan
-          String datasetId = (invDatasetString.lastIndexOf("/")>-1) ? invDatasetString.substring(0,(invDatasetString.lastIndexOf("/"))) : invDatasetString;
+          String catalogDatasetId = (invDatasetString.lastIndexOf("/")>-1) ? invDatasetString.substring(0,(invDatasetString.lastIndexOf("/"))) : invDatasetString;
     	  DataRootHandler drh = DataRootHandler.getInstance();          
     	  
           catalog = drh.getCatalog( catalogPath, new URI( catalogString ) );
@@ -80,13 +80,20 @@ public abstract class AbstractMetadataController implements IMetadataContoller {
           } else {
         	  _log.debug("catalog name: " + catalog.getName());
           }
-          ids = (InvDataset) catalog.findDatasetByID(datasetId);
+          ids = (InvDataset) catalog.findDatasetByID(catalogDatasetId);
+          if (ids.hasNestedDatasets()) {
+        	  String nestedDataset = invDatasetString.substring((invDatasetString.lastIndexOf("/")+1), invDatasetString.length());
+        	  //then look up the individual nested dataset using 
+        	  InvDataset nds = ids.findDatasetByName(nestedDataset);
+        	  _log.debug("nestedDataset name: " + nestedDataset);
+        	  return nds;
+          }
           
           if (ids!=null) {
             _log.debug("Dataset information retrieved!"
             + ids.getCatalogUrl() + "; id=" + ids.getName());          
           } else {
-        	_log.debug("Dataset not found!: " + datasetId);
+        	_log.debug("Dataset not found!: " + catalogDatasetId);
           }
         }
     	catch ( NullPointerException npe) {
