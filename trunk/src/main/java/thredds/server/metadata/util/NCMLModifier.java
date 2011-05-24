@@ -297,6 +297,10 @@ public class NCMLModifier {
 	      if (tc.useResolution() && (resolution != null) && !resolution.isBlank()) {
 	    	  addElem(groupElem, "time_coverage_resolution", StringUtil.quoteXmlContent(resolution.toString()));
 	      }
+	      TimeDuration duration = tc.getDuration();
+	      if (tc.useDuration() && (duration != null) && !duration.isBlank()) {
+	    	  addElem(groupElem, "time_coverage_duration", StringUtil.quoteXmlContent(duration.toString()));
+	      }
 
 	    }
 
