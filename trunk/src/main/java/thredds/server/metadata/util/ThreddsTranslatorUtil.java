@@ -28,7 +28,6 @@
  */
 package thredds.server.metadata.util;
 
-import thredds.server.metadata.controller.IsoController;
 import thredds.server.metadata.exception.ThreddsUtilitiesException;
 
 import org.apache.commons.lang.StringUtils;
@@ -64,7 +63,7 @@ public class ThreddsTranslatorUtil {
     private static final TransformerFactory transFact =  TransformerFactory.newInstance();
 
     private static InputStream getXSLT(String xslName) {
-    	return ThreddsTranslatorUtil.class.getResourceAsStream("/" + xslName);
+    	return ThreddsTranslatorUtil.class.getResourceAsStream("/resources/xsl/" + xslName);
     }
     
     /**
