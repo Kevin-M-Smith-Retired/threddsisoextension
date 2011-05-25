@@ -127,7 +127,7 @@ public class NCMLModifier {
 	    //Use for lineage???  won't use unless we are looking for an explicit type? 
 	    java.util.List<InvDocumentation> docs = ids.getDocumentation();
 	    if (docs.size() > 0) {
-	      Element docsGrp = doAddGroupElem(groupElem, "documents");
+	      Element docsGrp = doAddGroupElem(groupElem, "documentation");
 	      for (InvDocumentation doc : docs) {
 	    	Element docGrp = doAddGroupElem(docsGrp, "document");
 	        String type = (doc.getType() == null) ? "" : StringUtil.quoteXmlContent(doc.getType());
@@ -136,11 +136,11 @@ public class NCMLModifier {
 	        String xlinkTitle = null;
 	        if ((inline != null) && (inline.length() > 0))
 	          inline = StringUtil.quoteXmlContent(inline);
-	          addElem(docGrp, "inline", inline);	
+	          addElem(docGrp, "inline", inline, type);	
 	        if (doc.hasXlink()) {
 	          xlink = doc.getXlinkHref();
 	          xlinkTitle = doc.getXlinkTitle();
-	          addElem(docGrp, "xlink", xlink, xlinkTitle);
+	          addElem(docGrp, "xlink", xlink, type);
 	        }
 	      }
 	    }
