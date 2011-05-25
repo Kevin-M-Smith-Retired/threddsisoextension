@@ -136,9 +136,6 @@
           <resource>
             <directory>src/main/resources/dev</directory>
           </resource>
-          <resource>
-            <directory>src/main/resources/xsl</directory>            
-          </resource>		  
         </resources>
       </build>
     </profile>
@@ -149,9 +146,6 @@
           <resource>
             <directory>src/main/resources/prod</directory>
           </resource>
-          <resource>
-            <directory>src/main/resources/xsl</directory>            
-          </resource>		  
         </resources>
       </build>
     </profile>
