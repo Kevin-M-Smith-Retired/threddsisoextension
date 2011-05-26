@@ -2,12 +2,14 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:nc="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
 	<xd:doc xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" scope="stylesheet">
 		<xd:desc>
-			<xd:p><xd:b>Created on:</xd:b> April 13, 2011</xd:p>
+			<xd:p><xd:b>Created on:</xd:b> April 14, 2011</xd:p>
 			<xd:p><xd:b>Author:</xd:b>ted.habermann@noaa.gov</xd:p>
+			<xd:p><xd:b>Modified on:</xd:b> May 26, 2011</xd:p>
+			<xd:p><xd:b>Author:</xd:b>david.neufeld@noaa.gov</xd:p>
 			<xd:p/>
 		</xd:desc>
 	</xd:doc>
-	<xsl:variable name="rubricVersion" select="'1.1'"/>
+	<xsl:variable name="rubricVersion" select="'1.2'"/>
 	<xsl:output method="xml" indent="yes"/>
 	<xsl:template name="showScore">
 		<xsl:param name="score"/>
@@ -719,9 +721,50 @@
 		<xsl:variable name="responsiblePartyTotal" select="$creatorTotal + $contributorTotal + $publisherTotal"/>
 		<xsl:variable name="responsiblePartyMax">14</xsl:variable>
 		<!-- Other Fields: 2 possible -->
-		<xsl:variable name="cdmTypeCnt" select="count(/nc:netcdf/nc:attribute[@name='cdm_data_type'])"/>
-		<xsl:variable name="procLevelCnt" select="count(/nc:netcdf/nc:attribute[@name='processing_level'])"/>
-		<xsl:variable name="licenseCnt" select="count(/nc:netcdf/nc:attribute[@name='license'])"/>
+		<xsl:variable name="cdmTypeCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='cdm_data_type']) > 0">
+              <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='cdm_data_type'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='data_type'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>   
+		<xsl:variable name="procLevelCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='processing_level']) > 0">
+              <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='processing_level'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+		      <xsl:choose>            
+                <xsl:when test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='processing_level']) > 0">
+                  <xsl:value-of select="1"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="0"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>        	
+		<xsl:variable name="licenseCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='license']) > 0">
+              <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='processing_level'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+		      <xsl:choose>            
+                <xsl:when test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='rights']) > 0">
+                  <xsl:value-of select="1"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="0"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>        	
 		<xsl:variable name="otherTotal" select="$cdmTypeCnt + $procLevelCnt + $licenseCnt"/>
 		<xsl:variable name="otherMax">3</xsl:variable>
 		
