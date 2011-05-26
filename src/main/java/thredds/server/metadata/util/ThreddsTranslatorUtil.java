@@ -324,12 +324,11 @@ public class ThreddsTranslatorUtil {
     }    
 
 	private static void doTransform(final InputStream xsltIS, final InputStream is, Writer writer) throws ThreddsUtilitiesException {
-
-		Source xsltSource = new StreamSource(xsltIS);
-		Templates cachedXSLT;
-		StreamResult result = new StreamResult(writer);        
-        
 		try {
+		    Source xsltSource = new StreamSource(xsltIS);
+		    Templates cachedXSLT;
+		    StreamResult result = new StreamResult(writer);        
+
 			StreamSource xmlStream = new StreamSource(is);
 			cachedXSLT = transFact.newTemplates(xsltSource);
 			Transformer trans = cachedXSLT.newTransformer();
