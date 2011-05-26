@@ -28,6 +28,7 @@
  */
 package thredds.server.metadata.util;
 
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -124,7 +125,6 @@ public class NCMLModifier {
 	    if (ids.getAuthority() != null)
 	    	addElem(groupElem, "authority", StringUtil.quoteXmlContent(ids.getAuthority()));
 	    
-	    //Use for lineage???  won't use unless we are looking for an explicit type? 
 	    java.util.List<InvDocumentation> docs = ids.getDocumentation();
 	    if (docs.size() > 0) {
 	      Element docsGrp = doAddGroupElem(groupElem, "documentation");
@@ -154,7 +154,7 @@ public class NCMLModifier {
 
 	        String fullUrlString = urlString;
 	          ServiceType stype = s.getServiceType();
-	          _log.info("THREDDS service type=" + stype);
+	          _log.debug("THREDDS service type=" + stype);
 	          if ((stype == ServiceType.OPENDAP) || (stype == ServiceType.DODS)) {
 	            fullUrlString = fullUrlString + ".html";
 	            addElem(servicesGrp, "opendap_service", fullUrlString);	             
@@ -191,10 +191,10 @@ public class NCMLModifier {
 	    if (keywords.size() > 0) {
 	      Element keywordsGrp = doAddGroupElem(groupElem, "keywords");	     
 	      for (ThreddsMetadata.Vocab t : keywords) {
-	    	Element keywordGrp = doAddGroupElem(keywordsGrp, "keyword");	
 	    	String vocab = (t.getVocabulary() == null) ? "" : StringUtil.quoteXmlContent(t.getVocabulary());
 	    	String text = StringUtil.quoteXmlContent(t.getText());
-	        addElem(keywordGrp, vocab, text);      
+	        addElem(keywordsGrp, "keyword", text);    
+	        if (!vocab.equals("")) addElem(keywordsGrp, "vocab", vocab);  
 	      }
 	    }	    
 	    	
@@ -245,7 +245,15 @@ public class NCMLModifier {
 		      addElem(publisherGrp, "url", url);
 	        }
 	    }
-	        
+
+	    java.util.List<ThreddsMetadata.Variables> vars = ids.getVariables();
+	    if (vars.size() > 0) {
+	      for (ThreddsMetadata.Variables t : vars) {
+	    	String uri = (t.getVocabUri() == null) ? "" : t.getVocabUri().toString();
+	    	addElem(groupElem, "standard_name_vocabulary", t.getVocabulary(), uri);
+	      }
+	    }	    
+
 	    ThreddsMetadata.GeospatialCoverage gc = ids.getGeospatialCoverage();
 	    if ((gc != null) && !gc.isEmpty()) {
 	        addElem(groupElem, "geospatial_lon_min", Double.toString(gc.getBoundingBox().getLonMin()));

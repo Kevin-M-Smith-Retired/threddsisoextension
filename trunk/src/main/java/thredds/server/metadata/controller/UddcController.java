@@ -111,7 +111,7 @@ public class UddcController extends AbstractMetadataController {
 			res.getWriter().flush();
 
 		} catch (Exception e) {
-			String errMsg = "Error in IsoController: " + req.getQueryString();
+			String errMsg = "Error in UDDCController: " + req.getQueryString();
 			_log.error(errMsg, e);
 			try {this.returnError(errMsg, _metadataServiceType, res);} catch (Exception fe) {}
 
