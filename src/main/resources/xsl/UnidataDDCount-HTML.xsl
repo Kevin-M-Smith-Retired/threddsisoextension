@@ -126,20 +126,134 @@
 		<xsl:variable name="variableAttributeCnt" select="count(/nc:netcdf/nc:variable/nc:attribute)"/>
 		<xsl:variable name="standardNameCnt" select="count(/nc:netcdf/nc:variable/nc:attribute[@name='standard_name'])"/>
 		<!-- Identifier Fields: 4 possible -->
-		<xsl:variable name="idCnt" select="count(/nc:netcdf/nc:attribute[@name='id'])"/>
-		<xsl:variable name="identifierNameSpaceCnt" select="count(/nc:netcdf/nc:attribute[@name='naming_authority'])"/>
-		<xsl:variable name="metadataConventionCnt" select="count(/nc:netcdf/nc:attribute[@name='Metadata_Conventions'])"/>
-		<xsl:variable name="metadataLinkCnt" select="count(/nc:netcdf/nc:attribute[@name='Metadata_Link'])+count(/nc:netcdf/nc:attribute[@name='metadata_link'])"/>
+		<xsl:variable name="idCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='id']) > 0">
+                <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='id'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='id'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>         
+		<xsl:variable name="identifierNameSpaceCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='naming_authority']) > 0">
+                <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='naming_authority'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='authority'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>                
+		<xsl:variable name="metadataConventionCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='Metadata_Conventions']) > 0">
+                <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='Metadata_Conventions'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='Metadata_Conventions'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>  
+		<xsl:variable name="metadataLinkCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='Metadata_Link']) > 0">
+                <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='Metadata_Link'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:choose>            
+                <xsl:when test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@name='xlink']) > 0">
+                  <xsl:value-of select="1"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="0"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:otherwise>            
+          </xsl:choose>
+        </xsl:variable> 		
 		<xsl:variable name="identifierTotal" select="$idCnt + $identifierNameSpaceCnt + $metadataConventionCnt + $metadataLinkCnt"/>
 		<xsl:variable name="identifierMax">4</xsl:variable>
 		<!-- Text Search Fields: 7 possible -->
-		<xsl:variable name="titleCnt" select="count(/nc:netcdf/nc:attribute[@name='title'])"/>
-		<xsl:variable name="summaryCnt" select="count(/nc:netcdf/nc:attribute[@name='summary'])"/>
-		<xsl:variable name="keywordsCnt" select="count(/nc:netcdf/nc:attribute[@name='keywords'])"/>
-		<xsl:variable name="keywordsVocabCnt" select="count(/nc:netcdf/nc:attribute[@name='keywords_vocabulary'])"/>
-		<xsl:variable name="stdNameVocabCnt" select="count(/nc:netcdf/nc:attribute[@name='standard_name_vocabulary'])"/>
-		<xsl:variable name="commentCnt" select="count(/nc:netcdf/nc:attribute[@name='comment'])"/>
-		<xsl:variable name="historyCnt" select="count(/nc:netcdf/nc:attribute[@name='history'])"/>
+		<xsl:variable name="titleCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='title']) > 0">
+                <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='title'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='full_name'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable> 			
+		<xsl:variable name="summaryCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='summary']) > 0">
+                <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='summary'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='summary'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable> 	
+		<xsl:variable name="keywordsCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='keywords']) > 0">
+                <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='keywords'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='keywords'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+		<xsl:variable name="keywordsVocabCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='keywords_vocabulary']) > 0">
+                <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='keywords_vocabulary'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='keywords']/nc:attribute[@name='vocab'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+		<xsl:variable name="stdNameVocabCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='standard_name_vocabulary']) > 0">
+                <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='standard_name_vocabulary'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:choose>            
+                <xsl:when test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='standard_name_vocabulary']) > 0">
+                  <xsl:value-of select="1"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="0"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+		<xsl:variable name="commentCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='comment']) > 0">
+                <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='comment'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>        
+		<xsl:variable name="historyCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='history']) > 0">
+                <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='history'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='history'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>        
+
 		<xsl:variable name="textSearchTotal" select="$titleCnt + $summaryCnt + $keywordsCnt + $keywordsVocabCnt      + $stdNameVocabCnt + $commentCnt + $historyCnt"/>
 		<xsl:variable name="textSearchMax">7</xsl:variable>		
 		
@@ -470,27 +584,7 @@
               <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='creators']/nc:group[@name='creator']/nc:attribute[@name='email'])"/>
             </xsl:otherwise>
           </xsl:choose>
-        </xsl:variable>        
-		<xsl:variable name="creatorURLCnt">
-          <xsl:choose>            
-            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='creator_url']) > 0">
-              <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='creator_url'])"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='creators']/nc:group[@name='creator']/nc:attribute[@name='url'])"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:variable>      
-		<xsl:variable name="creatorURLCnt">
-          <xsl:choose>            
-            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='creator_url']) > 0">
-              <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='creator_url'])"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='creators']/nc:group[@name='creator']/nc:attribute[@name='url'])"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:variable>    
+        </xsl:variable>               
 		<xsl:variable name="creatorDateCnt">
           <xsl:choose>            
             <xsl:when test="count(/nc:netcdf/nc:attribute[@name='date_created']) > 0">
@@ -521,7 +615,7 @@
             </xsl:otherwise>
           </xsl:choose>
         </xsl:variable>  	
-		<xsl:variable name="creatorInstCnt" select="count(/nc:netcdf/nc:attribute[@name='institution'])"/>
+		<xsl:variable name="creatorInstCnt" select="count(/nc:netcdf/nc:attribute[@name='institution'])"/>		
 		<xsl:variable name="creatorProjCnt">
           <xsl:choose>            
             <xsl:when test="count(/nc:netcdf/nc:attribute[@name='project']) > 0">
@@ -536,23 +630,89 @@
           <xsl:choose>            
             <xsl:when test="count(/nc:netcdf/nc:attribute[@name='acknowledgment']) > 0">
               <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='acknowledgment'])"/>
-            </xsl:when>
+            </xsl:when>            
             <xsl:otherwise>
-              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='funding'])"/>
-            </xsl:otherwise>
+              <xsl:choose>            
+                <xsl:when test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='funding']) > 0">
+                  <xsl:value-of select="1"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="0"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:otherwise>            
           </xsl:choose>
         </xsl:variable>         
 		<xsl:variable name="creatorTotal" select="$creatorNameCnt + $creatorURLCnt + $creatorEmailCnt + $creatorDateCnt       + $modifiedDateCnt + $issuedDateCnt + $creatorInstCnt + $creatorProjCnt + $creatorAckCnt"/>
 		<xsl:variable name="creatorMax">9</xsl:variable>
 		<!--  -->
-		<xsl:variable name="contributorNameCnt" select="count(/nc:netcdf/nc:attribute[@name='contributor_name'])"/>
-		<xsl:variable name="contributorRoleCnt" select="count(/nc:netcdf/nc:attribute[@name='contributor_role'])"/>
+		<xsl:variable name="contributorNameCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='contributor_name']) > 0">
+              <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='contributor_name'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:choose>            
+                <xsl:when test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='contributors']/nc:group[@name='contributor']/nc:attribute[@name='name']) > 0">
+                  <xsl:value-of select="1"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="0"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable> 		
+		<xsl:variable name="contributorRoleCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='contributor_role']) > 0">
+              <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='contributor_role'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:choose>            
+                <xsl:when test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='contributors']/nc:group[@name='contributor']/nc:attribute[@name='role']) > 0">
+                  <xsl:value-of select="1"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="0"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable> 		
 		<xsl:variable name="contributorTotal" select="$contributorNameCnt + $contributorRoleCnt"/>
 		<xsl:variable name="contributorMax">2</xsl:variable>
 		<!--  -->
-		<xsl:variable name="publisherNameCnt" select="count(/nc:netcdf/nc:attribute[@name='publisher_name'])"/>
-		<xsl:variable name="publisherURLCnt" select="count(/nc:netcdf/nc:attribute[@name='publisher_url'])"/>
-		<xsl:variable name="publisherEmailCnt" select="count(/nc:netcdf/nc:attribute[@name='publisher_email'])"/>
+		<xsl:variable name="publisherNameCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='publisher_name']) > 0">
+              <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='publisher_name'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='publishers']/nc:group[@name='publisher']/nc:attribute[@type='name'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable> 
+		<xsl:variable name="publisherURLCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='publisher_url']) > 0">
+              <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='publisher_url'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='publishers']/nc:group[@name='publisher']/nc:attribute[@type='url'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>         
+		<xsl:variable name="publisherEmailCnt">
+          <xsl:choose>            
+            <xsl:when test="count(/nc:netcdf/nc:attribute[@name='publisher_email']) > 0">
+              <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='publisher_email'])"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='publishers']/nc:group[@name='publisher']/nc:attribute[@type='email'])"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>         
 		<xsl:variable name="publisherTotal" select="$publisherNameCnt + $publisherURLCnt + $publisherEmailCnt"/>
 		<xsl:variable name="publisherMax">3</xsl:variable>
 		<!--  -->
