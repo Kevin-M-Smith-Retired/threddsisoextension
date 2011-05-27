@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
 import thredds.catalog.InvDataset;
+import thredds.server.metadata.exception.ThreddsUtilitiesException;
 import thredds.server.metadata.service.EnhancedMetadataService;
 import thredds.server.metadata.util.DatasetHandlerAdapter;
 import thredds.server.metadata.util.ThreddsTranslatorUtil;
@@ -110,9 +111,12 @@ public class IsoController extends AbstractMetadataController {
 			ThreddsTranslatorUtil.transform("UnidataDD2MI.xsl", is, res
 					.getWriter());
 			res.getWriter().flush();
-
+		} catch (ThreddsUtilitiesException tue) {
+			String errMsg = "Error in " + _metadataServiceType + ": " + req.getQueryString();
+			_log.error(errMsg, tue);
+			try {this.returnError(errMsg, _metadataServiceType, res);} catch (Exception fe) {}
 		} catch (Exception e) {
-			String errMsg = "Error in IsoController: " + req.getQueryString();
+			String errMsg = "Error in " + _metadataServiceType + ": " + req.getQueryString();
 			_log.error(errMsg, e);
 			try {this.returnError(errMsg, _metadataServiceType, res);} catch (Exception fe) {}
 

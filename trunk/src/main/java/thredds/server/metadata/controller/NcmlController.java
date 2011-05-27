@@ -108,7 +108,7 @@ public class NcmlController extends AbstractMetadataController {
 			writer.flush();
 			
 		} catch (Exception e) {
-			String errMsg = "Error in NcmlController: " + req.getQueryString();
+			String errMsg = "Error in " + _metadataServiceType + ": " + req.getQueryString();
 			_log.error(errMsg, e);
 			try {this.returnError(errMsg, _metadataServiceType, res);} catch (Exception fe) {}
 
