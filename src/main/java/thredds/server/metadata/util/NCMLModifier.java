@@ -214,7 +214,8 @@ public class NCMLModifier {
 	      for (ThreddsMetadata.Vocab t : projects) {
 	    	String vocab = (t.getVocabulary() == null) ? "" : StringUtil.quoteXmlContent(t.getVocabulary());
 	    	String text = StringUtil.quoteXmlContent(t.getText());
-	    	addElem(projectsGrp, vocab, text); 
+	    	addElem(projectsGrp, "project", text); 
+	    	if (!vocab.equals("")) addElem(projectsGrp, "vocab", vocab); 
 	      }
 	    }
 

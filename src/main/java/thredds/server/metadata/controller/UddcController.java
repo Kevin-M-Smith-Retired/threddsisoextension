@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
 import thredds.catalog.InvDataset;
+import thredds.server.metadata.exception.ThreddsUtilitiesException;
 import thredds.server.metadata.service.EnhancedMetadataService;
 import thredds.server.metadata.util.DatasetHandlerAdapter;
 import thredds.server.metadata.util.ThreddsTranslatorUtil;
@@ -109,7 +110,10 @@ public class UddcController extends AbstractMetadataController {
 					is, res.getWriter());
 			
 			res.getWriter().flush();
-
+		} catch (ThreddsUtilitiesException tue) {
+			String errMsg = "Error in UDDCController: " + req.getQueryString();
+			_log.error(errMsg, tue);
+			try {this.returnError(errMsg, _metadataServiceType, res);} catch (Exception fe) {}
 		} catch (Exception e) {
 			String errMsg = "Error in UDDCController: " + req.getQueryString();
 			_log.error(errMsg, e);
