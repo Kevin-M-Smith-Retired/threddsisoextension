@@ -349,7 +349,7 @@ public class NCMLModifier {
 		Date dateStamp = Calendar.getInstance().getTime();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String metadata_creation_date = sdf.format(dateStamp);
-        addElem(groupElem,"thredds_nciso_metadata_creation", metadata_creation_date);      
+        addElem(groupElem,"metadata_creation", metadata_creation_date);      
 	}
 	
 	private Element newGroupElement() {
