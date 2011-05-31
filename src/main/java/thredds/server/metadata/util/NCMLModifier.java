@@ -28,7 +28,6 @@
  */
 package thredds.server.metadata.util;
 
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,7 +44,6 @@ import thredds.catalog.InvService;
 import thredds.catalog.ServiceType;
 import thredds.catalog.ThreddsMetadata;
 import thredds.server.metadata.bean.Extent;
-import thredds.server.metadata.service.EnhancedMetadataService;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
