@@ -739,7 +739,7 @@
       </gmd:contact>
       <gmd:dateStamp>
         <gco:Date>
-          <xsl:value-of select="/nc:netcdf/nc:attribute[@name='thredds_nciso_metadata_creation']/@value"/>
+          <xsl:value-of select="/nc:netcdf/nc:group[@name='NCISOMetadata']/nc:attribute[@name='metadata_creation']/@value"/>
         </gco:Date>
       </gmd:dateStamp>
       <gmd:metadataStandardName>
@@ -1056,10 +1056,10 @@
                     </gmd:keyword>
                   </xsl:when>
                   <xsl:otherwise>  
-                    <xsl:for-each select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='keywords']">
+                    <xsl:for-each select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='keywords']/nc:attribute[@name='keyword']">
                       <gmd:keyword>
                         <gco:CharacterString>   
-                          <xsl:value-of select="nc:attribute[@name='keyword']/@value"/>                    
+                          <xsl:value-of select="@value"/>                    
                         </gco:CharacterString>
                       </gmd:keyword>   
                     </xsl:for-each>                          
@@ -1095,7 +1095,7 @@
               </gmd:MD_Keywords>
             </gmd:descriptiveKeywords>
           </xsl:if>
-          <xsl:if test="$creatorProjCnt">
+          <xsl:if test="count(/nc:netcdf/nc:attribute[@name='project']) > 0 or count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='projects']/nc:attribute[@name='project']) > 0">
             <gmd:descriptiveKeywords>
               <gmd:MD_Keywords>
                 <xsl:choose>            
@@ -1107,15 +1107,15 @@
                     </gmd:keyword>                        
                   </xsl:when>              
                   <xsl:otherwise>  
-                    <xsl:for-each select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='projects']">
+                    <xsl:for-each select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='projects']/nc:attribute[@name='project']">
                       <gmd:keyword>
                         <gco:CharacterString>                  
-                          <xsl:value-of select="nc:attribute[@name='project']/@value"/>         
+                          <xsl:value-of select="@value"/>         
                         </gco:CharacterString>
                       </gmd:keyword>
                     </xsl:for-each>
                   </xsl:otherwise>
-                </xsl:choose>                       
+                </xsl:choose> 
                 <gmd:type>
                   <xsl:call-template name="writeCodelist">
                     <xsl:with-param name="codeListName" select="'gmd:MD_KeywordTypeCode'"/>
@@ -1130,7 +1130,7 @@
               </gmd:MD_Keywords>
             </gmd:descriptiveKeywords>
           </xsl:if>
-          <xsl:if test="$publisherNameCnt">
+          <xsl:if test="count(/nc:netcdf/nc:attribute[@name='publisher_name']) > 0 or count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='publisher']) > 0">
             <gmd:descriptiveKeywords>
               <gmd:MD_Keywords>
                 <xsl:choose>            
@@ -1142,10 +1142,10 @@
                     </gmd:keyword>                        
                   </xsl:when>
                 <xsl:otherwise>  
-                  <xsl:for-each select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='projects']">                
+                  <xsl:for-each select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='projects']/nc:group[@name='publisher']">                
                     <gmd:keyword>
                       <gco:CharacterString>  
-                        <xsl:value-of select="nc:group[@name='publisher']/nc:attribute[@type='name']/@value"/>         
+                        <xsl:value-of select="nc:attribute[@type='name']/@value"/>         
                       </gco:CharacterString>
                     </gmd:keyword>
                   </xsl:for-each>
@@ -1230,12 +1230,12 @@
                     </gmd:aggregateDataSetName>
                   </xsl:when>              
                   <xsl:otherwise>  
-                    <xsl:for-each select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='projects']">
+                    <xsl:for-each select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='projects']/nc:attribute[@name='project']">
                       <gmd:aggregateDataSetName>
                         <gmd:CI_Citation>
                           <gmd:title>
                             <gco:CharacterString>                 
-                              <xsl:value-of select="nc:attribute[@name='project']/@value"/>         
+                              <xsl:value-of select="@value"/>         
                             </gco:CharacterString>
                           </gmd:title>
                           <gmd:date gco:nilReason="inapplicable"/>
@@ -1392,7 +1392,7 @@
                       </gmd:EX_TemporalExtent>
                     </gmd:temporalElement>
                   </xsl:if>
-                  <xsl:if test="$vertical_minCnt">
+                  <xsl:if test="$vertical_minCnt > 0">
                     <gmd:verticalElement>
                       <gmd:EX_VerticalExtent>
                         <gmd:minimumValue>
