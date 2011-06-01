@@ -108,7 +108,7 @@
 		<artifactId>jaxen</artifactId>
 		<version>1.1.1</version>
 		<type>jar</type>
-		<scope>runtime</scope>
+		<scope>provided</scope>
 	</dependency>		
   	
 	<dependency>  	
@@ -158,6 +158,9 @@
   </profiles>        
   <build>
     <plugins>
+        <!-- The most recent xslts are much smaller meaning that Xalan 2.7.1 is not currently needed  
+         However, allowing for flexibility that they may grow in size again we leave them in the pom for now.   
+    
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -175,6 +178,7 @@
           </execution>
         </executions>
       </plugin>
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
