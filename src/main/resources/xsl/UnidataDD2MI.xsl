@@ -1044,7 +1044,7 @@
               </xsl:otherwise>
             </xsl:choose>   
           </gmd:credit>
-          <xsl:if test="$keywordsCnt">
+          <xsl:if test="count(/nc:netcdf/nc:attribute[@name='keywords']) > 0 or count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='keywords']/nc:attribute[@name='keyword']) > 0">
             <gmd:descriptiveKeywords>
               <gmd:MD_Keywords>
                 <xsl:choose>            
@@ -1314,7 +1314,7 @@
                   <xsl:attribute name="id">
                     <xsl:value-of select="'boundingExtent'"/>
                   </xsl:attribute>
-                  <xsl:if test="$geospatial_lat_minCnt">
+                  <xsl:if test="$geospatial_lat_minCnt > 0">
                     <gmd:geographicElement>
                       <gmd:EX_GeographicBoundingBox id="boundingGeographicBoundingBox">
                         <gmd:extentTypeCode>
@@ -2094,7 +2094,7 @@
                     <xsl:attribute name="id">
                       <xsl:value-of select="'boundingExtent'"/>
                     </xsl:attribute>
-                    <xsl:if test="$geospatial_lat_minCnt">
+                    <xsl:if test="$geospatial_lat_minCnt > 0">
                       <gmd:geographicElement>
                         <gmd:EX_GeographicBoundingBox id="boundingGeographicBoundingBox">
                           <gmd:extentTypeCode>
