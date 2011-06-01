@@ -68,10 +68,10 @@
 		<xsl:variable name="identifierTotal" select="$idCnt + $identifierNameSpaceCnt + $metadataConventionCnt + $metadataLinkCnt"/>
 		<xsl:variable name="identifierMax">4</xsl:variable>
 		<!-- Service Fields: 4 possible -->
-		<xsl:variable name="thredds_netcdfsubsetCnt" select="count(/nc:netcdf/nc:attribute[@name='thredds_netcdfsubset_service'])"/>
-		<xsl:variable name="thredds_opendapCnt" select="count(/nc:netcdf/nc:attribute[@name='thredds_opendap_service'])"/>
-		<xsl:variable name="thredds_wcsCnt" select="count(/nc:netcdf/nc:attribute[@name='thredds_wcs_service'])"/>
-		<xsl:variable name="thredds_wmsCnt" select="count(/nc:netcdf/nc:attribute[@name='thredds_wms_service'])"/>
+		<xsl:variable name="thredds_netcdfsubsetCnt" select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='nccs_service'])"/>
+		<xsl:variable name="thredds_opendapCnt" select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='opendap_service'])"/>
+		<xsl:variable name="thredds_wcsCnt" select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='wcs_service'])"/>
+		<xsl:variable name="thredds_wmsCnt" select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='wms_service'])"/>
 		<xsl:variable name="serviceTotal" select="$thredds_netcdfsubsetCnt + $thredds_opendapCnt + $thredds_wcsCnt + $thredds_wmsCnt"/><xsl:variable name="serviceMax">4</xsl:variable>
 		<!-- Text Search Fields: 7 possible -->
 		<xsl:variable name="titleCnt">
