@@ -9,7 +9,7 @@
 			<xd:p/>
 		</xd:desc>
 	</xd:doc>
-	<xsl:variable name="rubricVersion" select="'1.2'"/>
+	<xsl:variable name="rubricVersion" select="'1.3'"/>
 	<xsl:output method="xml" indent="yes"/>
 	<xsl:template name="showScore">
 		<xsl:param name="score"/>

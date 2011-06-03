@@ -7,6 +7,8 @@
     <xd:desc>
       <xd:p><xd:b>Created on:</xd:b>April 15, 2011</xd:p>
       <xd:p><xd:b>Author:</xd:b>ted.habermann@noaa.gov</xd:p>
+	  <xd:p><xd:b>Modified on:</xd:b> May 26, 2011</xd:p>
+	  <xd:p><xd:b>Author:</xd:b>david.neufeld@noaa.gov</xd:p>      
       <xd:p/>
     </xd:desc>
   </xd:doc>
