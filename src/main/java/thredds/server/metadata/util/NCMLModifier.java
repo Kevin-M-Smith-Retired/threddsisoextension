@@ -78,7 +78,7 @@ public class NCMLModifier {
 	* @param extent the geospatial extent of the NetCDF file
 	* @param element the root XML element of the NCML document
 	*/			
-	public void addCFMetdata(final Extent ext, final Element groupElem) {
+	public void addCFMetadata(final Extent ext, final Element groupElem) {
 		//Geospatial        	 		
 
         if (ext._minLon!=null) addElem(groupElem, "geospatial_lon_min", ext._minLon.toString(), "float");

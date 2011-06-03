@@ -76,7 +76,7 @@ public class EnhancedMetadataService {
     	List<Element> list = xmlUtil.elemFinder("//ncml:netcdf", "ncml", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");
     	Element rootElem = list.get(0);
     	Element cfGroupElem = ncmlMod.doAddGroupElem(rootElem, "CFMetadata");
-    	ncmlMod.addCFMetdata(ext, cfGroupElem);
+    	ncmlMod.addCFMetadata(ext, cfGroupElem);
     	
     	Element ncIsoGroupElem = ncmlMod.doAddGroupElem(rootElem, "NCISOMetadata");
     	ncmlMod.addNcIsoMetadata(ncIsoGroupElem);
