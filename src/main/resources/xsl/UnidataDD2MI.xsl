@@ -2089,16 +2089,12 @@
         <srv:extent>
         <xsl:choose>
           <xsl:when test="$extentTotal">
-            <gmd:extent>
               <xsl:choose>
                 <xsl:when test="$extentTotal">
                   <gmd:EX_Extent>
-                    <xsl:attribute name="id">
-                      <xsl:value-of select="'boundingExtent'"/>
-                    </xsl:attribute>
                     <xsl:if test="$geospatial_lat_minCnt > 0">
                       <gmd:geographicElement>
-                        <gmd:EX_GeographicBoundingBox id="boundingGeographicBoundingBox">
+                        <gmd:EX_GeographicBoundingBox>
                           <gmd:extentTypeCode>
                             <gco:Boolean>1</gco:Boolean>
                           </gmd:extentTypeCode>
@@ -2145,14 +2141,14 @@
                         </gmd:EX_GeographicBoundingBox>
                       </gmd:geographicElement>
                     </xsl:if>
-                    <xsl:if test="$timeStartCnt">
+                    <xsl:if test="$timeStartCnt > 0">
                       <gmd:temporalElement>
                         <gmd:EX_TemporalExtent>
-                          <xsl:attribute name="id">
+                          <!-- <xsl:attribute name="id">
                             <xsl:value-of select="'boundingTemporalExtent'"/>
-                          </xsl:attribute>
+                          </xsl:attribute> -->
                           <gmd:extent>
-                            <gml:TimePeriod gml:id="timePeriod_id">
+                            <gml:TimePeriod gml:id="_timePeriod_id">
                               <gml:beginPosition>
                               <xsl:if test="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_start']">
                                 <xsl:value-of select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_start']/@value"/>
@@ -2174,7 +2170,7 @@
                         </gmd:EX_TemporalExtent>
                       </gmd:temporalElement>
                     </xsl:if>
-                    <xsl:if test="$vertical_minCnt">
+                    <xsl:if test="$vertical_minCnt > 0">
                       <gmd:verticalElement>
                         <gmd:EX_VerticalExtent>
                           <gmd:minimumValue>
@@ -2245,7 +2241,6 @@
                   </xsl:attribute>
                 </xsl:otherwise>
               </xsl:choose>
-            </gmd:extent>
             </xsl:when>
             <xsl:otherwise>
               <xsl:attribute name="gco:nilReason">
