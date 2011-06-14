@@ -12,6 +12,7 @@
       <xd:p><xd:b>Created on:</xd:b>April 15, 2011</xd:p>
       <xd:p><xd:b>Author:</xd:b>ted.habermann@noaa.gov</xd:p>
       <xd:p><xd:b>Modified on:</xd:b> June 13, 2011</xd:p>
+
       <xd:p><xd:b>Author:</xd:b>david.neufeld@noaa.gov</xd:p>
       <xd:p/>
     </xd:desc>
@@ -20,6 +21,7 @@
   <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
   <xsl:variable name="globalAttributeCnt" select="count(/nc:netcdf/nc:attribute)"/>
   <xsl:variable name="variableCnt" select="count(/nc:netcdf/nc:variable)"/>
+
   <xsl:variable name="variableAttributeCnt" select="count(/nc:netcdf/nc:variable/nc:attribute)"/>
   <xsl:variable name="standardNameCnt"
     select="count(/nc:netcdf/nc:variable/nc:attribute[@name='standard_name'])"/>
@@ -30,6 +32,7 @@
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='id']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='id'])"/>
       </xsl:when>
+
       <xsl:otherwise>
         <xsl:value-of
           select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='id'])"/>
@@ -40,6 +43,7 @@
     <xsl:choose>
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='naming_authority']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='naming_authority'])"/>
+
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of
@@ -51,6 +55,7 @@
   <xsl:variable name="metadataConventionCnt">
     <xsl:choose>
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='Metadata_Conventions']) > 0">
+
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='Metadata_Conventions'])"/>
       </xsl:when>
       <xsl:otherwise>
@@ -62,6 +67,7 @@
   </xsl:variable>
   <xsl:variable name="metadataLinkCnt">
     <xsl:choose>
+
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='Metadata_Link']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='Metadata_Link'])"/>
       </xsl:when>
@@ -72,6 +78,7 @@
             <xsl:value-of select="1"/>
           </xsl:when>
           <xsl:otherwise>
+
             <xsl:value-of select="0"/>
           </xsl:otherwise>
         </xsl:choose>
@@ -81,6 +88,7 @@
   <xsl:variable name="identifierTotal"
     select="$idCnt + $identifierNameSpaceCnt + $metadataConventionCnt + $metadataLinkCnt"/>
   <xsl:variable name="identifierMax">4</xsl:variable>
+
   <!-- Service Fields: 4 possible -->
   <xsl:variable name="thredds_netcdfsubsetCnt"
     select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='nccs_service'])"/>
@@ -90,9 +98,12 @@
     select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='wcs_service'])"/>
   <xsl:variable name="thredds_wmsCnt"
     select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='wms_service'])"/>
+  <xsl:variable name="thredds_sosCnt"
+    select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='sos_service'])"/>
   <xsl:variable name="serviceTotal"
-    select="$thredds_netcdfsubsetCnt + $thredds_opendapCnt + $thredds_wcsCnt + $thredds_wmsCnt"/>
-  <xsl:variable name="serviceMax">4</xsl:variable>
+    select="$thredds_netcdfsubsetCnt + $thredds_opendapCnt + $thredds_wcsCnt + $thredds_wmsCnt + $thredds_sosCnt"/>
+  <xsl:variable name="serviceMax">5</xsl:variable>
+
   <!-- Text Search Fields: 7 possible -->
   <xsl:variable name="titleCnt">
     <xsl:choose>
@@ -104,6 +115,7 @@
           select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='full_name'])"
         />
       </xsl:otherwise>
+
     </xsl:choose>
   </xsl:variable>
   <xsl:variable name="summaryCnt">
@@ -115,6 +127,7 @@
         <xsl:value-of
           select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='summary'])"
         />
+
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -124,6 +137,7 @@
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='keywords'])"/>
       </xsl:when>
       <xsl:otherwise>
+
         <xsl:value-of
           select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='keywords'])"/>
       </xsl:otherwise>
@@ -134,6 +148,7 @@
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='keywords_vocabulary']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='keywords_vocabulary'])"/>
       </xsl:when>
+
       <xsl:otherwise>
         <xsl:value-of
           select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='keywords']/nc:attribute[@name='vocab'])"
@@ -145,6 +160,7 @@
     <xsl:choose>
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='standard_name_vocabulary']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='standard_name_vocabulary'])"/>
+
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
@@ -155,6 +171,7 @@
           <xsl:otherwise>
             <xsl:value-of select="0"/>
           </xsl:otherwise>
+
         </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
@@ -164,6 +181,7 @@
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='comment']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='comment'])"/>
       </xsl:when>
+
       <xsl:otherwise>
         <xsl:value-of
           select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation'])"
@@ -175,6 +193,7 @@
     <xsl:choose>
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='history']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='history'])"/>
+
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of
@@ -199,6 +218,7 @@
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
+
           <xsl:when
             test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lat_min']) > 0">
             <xsl:value-of
@@ -211,6 +231,7 @@
         </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
+
   </xsl:variable>
   <xsl:variable name="geospatial_lat_maxCnt">
     <xsl:choose>
@@ -224,6 +245,7 @@
         <xsl:choose>
           <xsl:when
             test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lat_max']) > 0">
+
             <xsl:value-of
               select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lat_max'])"
             />
@@ -235,6 +257,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+
   <xsl:variable name="geospatial_lon_minCnt">
     <xsl:choose>
       <xsl:when
@@ -250,6 +273,7 @@
             <xsl:value-of
               select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lon_min'])"
             />
+
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='geospatial_lon_min'])"/>
@@ -259,6 +283,7 @@
     </xsl:choose>
   </xsl:variable>
   <xsl:variable name="geospatial_lon_maxCnt">
+
     <xsl:choose>
       <xsl:when
         test="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lon_max']) > 0">
@@ -274,6 +299,7 @@
               select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lon_max'])"
             />
           </xsl:when>
+
           <xsl:otherwise>
             <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='geospatial_lon_max'])"/>
           </xsl:otherwise>
@@ -283,6 +309,7 @@
   </xsl:variable>
   <xsl:variable name="timeStartCnt">
     <xsl:choose>
+
       <xsl:when
         test="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_start']) > 0">
         <xsl:value-of
@@ -298,6 +325,7 @@
             />
           </xsl:when>
           <xsl:otherwise>
+
             <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='time_coverage_start'])"/>
           </xsl:otherwise>
         </xsl:choose>
@@ -308,6 +336,7 @@
     <xsl:choose>
       <xsl:when
         test="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_end']) > 0">
+
         <xsl:value-of
           select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_end'])"
         />
@@ -322,6 +351,7 @@
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='time_coverage_end'])"/>
+
           </xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>
@@ -334,6 +364,7 @@
         <xsl:value-of
           select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_min'])"
         />
+
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
@@ -346,6 +377,7 @@
           <xsl:otherwise>
             <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='geospatial_vertical_min'])"/>
           </xsl:otherwise>
+
         </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
@@ -358,6 +390,7 @@
           select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_max'])"
         />
       </xsl:when>
+
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when
@@ -370,6 +403,7 @@
             <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='geospatial_vertical_max'])"/>
           </xsl:otherwise>
         </xsl:choose>
+
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -382,6 +416,7 @@
         />
       </xsl:when>
       <xsl:otherwise>
+
         <xsl:choose>
           <xsl:when
             test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lat_units']) > 0">
@@ -394,6 +429,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>
+
     </xsl:choose>
   </xsl:variable>
   <xsl:variable name="geospatial_lon_unitsCnt">
@@ -406,6 +442,7 @@
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
+
           <xsl:when
             test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lon_units']) > 0">
             <xsl:value-of
@@ -418,6 +455,7 @@
         </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
+
   </xsl:variable>
   <xsl:variable name="geospatial_lat_resolutionCnt">
     <xsl:choose>
@@ -431,6 +469,7 @@
         <xsl:choose>
           <xsl:when
             test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lat_resolution']) > 0">
+
             <xsl:value-of
               select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lat_resolution'])"
             />
@@ -443,6 +482,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+
   <xsl:variable name="geospatial_lon_resolutionCnt">
     <xsl:choose>
       <xsl:when
@@ -458,6 +498,7 @@
             <xsl:value-of
               select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lon_resolution'])"
             />
+
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='geospatial_lon_resolution'])"
@@ -468,6 +509,7 @@
     </xsl:choose>
   </xsl:variable>
   <xsl:variable name="timeResCnt">
+
     <xsl:choose>
       <xsl:when
         test="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_resolution']) > 0">
@@ -483,6 +525,7 @@
               select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='time_coverage_resolution'])"
             />
           </xsl:when>
+
           <xsl:otherwise>
             <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='time_coverage_resolution'])"
             />
@@ -493,6 +536,7 @@
   </xsl:variable>
   <xsl:variable name="timeDurCnt">
     <xsl:choose>
+
       <xsl:when
         test="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_duration']) > 0">
         <xsl:value-of
@@ -508,6 +552,7 @@
             />
           </xsl:when>
           <xsl:otherwise>
+
             <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='time_coverage_duration'])"/>
           </xsl:otherwise>
         </xsl:choose>
@@ -518,6 +563,7 @@
     <xsl:choose>
       <xsl:when
         test="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_units']) > 0">
+
         <xsl:value-of
           select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_units'])"
         />
@@ -533,6 +579,7 @@
           <xsl:otherwise>
             <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='geospatial_vertical_units'])"
             />
+
           </xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>
@@ -545,6 +592,7 @@
         <xsl:value-of
           select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_resolution'])"
         />
+
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
@@ -558,6 +606,7 @@
             <xsl:value-of
               select="count(/nc:netcdf/nc:attribute[@name='geospatial_vertical_resolution'])"/>
           </xsl:otherwise>
+
         </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
@@ -570,6 +619,7 @@
           select="count(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_positive'])"
         />
       </xsl:when>
+
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when
@@ -583,6 +633,7 @@
               select="count(/nc:netcdf/nc:attribute[@name='geospatial_vertical_positive'])"/>
           </xsl:otherwise>
         </xsl:choose>
+
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -605,6 +656,7 @@
         <xsl:value-of
           select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='creators']/nc:group[@name='creator']/nc:attribute[@name='name'])"
         />
+
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -614,6 +666,7 @@
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='creator_url'])"/>
       </xsl:when>
       <xsl:otherwise>
+
         <xsl:value-of
           select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='creators']/nc:group[@name='creator']/nc:attribute[@name='url'])"
         />
@@ -625,6 +678,7 @@
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='creator_email']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='creator_email'])"/>
       </xsl:when>
+
       <xsl:otherwise>
         <xsl:value-of
           select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='creators']/nc:group[@name='creator']/nc:attribute[@name='email'])"
@@ -636,6 +690,7 @@
     <xsl:choose>
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='date_created']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='date_created'])"/>
+
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of
@@ -647,6 +702,7 @@
   <xsl:variable name="modifiedDateCnt">
     <xsl:choose>
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='date_modified']) > 0">
+
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='date_modified'])"/>
       </xsl:when>
       <xsl:otherwise>
@@ -658,6 +714,7 @@
   </xsl:variable>
   <xsl:variable name="issuedDateCnt">
     <xsl:choose>
+
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='date_issued']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='date_issued'])"/>
       </xsl:when>
@@ -669,6 +726,7 @@
     </xsl:choose>
   </xsl:variable>
   <xsl:variable name="creatorInstCnt" select="count(/nc:netcdf/nc:attribute[@name='institution'])"/>
+
   <xsl:variable name="creatorProjCnt">
     <xsl:choose>
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='project']) > 0">
@@ -679,6 +737,7 @@
           select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='projects'])"/>
       </xsl:otherwise>
     </xsl:choose>
+
   </xsl:variable>
   <xsl:variable name="creatorAckCnt">
     <xsl:choose>
@@ -689,6 +748,7 @@
         <xsl:choose>
           <xsl:when
             test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='funding']) > 0">
+
             <xsl:value-of select="1"/>
           </xsl:when>
           <xsl:otherwise>
@@ -698,6 +758,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+
   <xsl:variable name="dateCnt" select="$creatorDateCnt + $modifiedDateCnt + $issuedDateCnt"/>
   <xsl:variable name="creatorTotal"
     select="$creatorNameCnt + $creatorURLCnt + $creatorEmailCnt + $creatorDateCnt       + $modifiedDateCnt + $issuedDateCnt + $creatorInstCnt + $creatorProjCnt + $creatorAckCnt"/>
@@ -707,6 +768,7 @@
     <xsl:choose>
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='contributor_name']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='contributor_name'])"/>
+
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
@@ -717,6 +779,7 @@
           <xsl:otherwise>
             <xsl:value-of select="0"/>
           </xsl:otherwise>
+
         </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
@@ -726,6 +789,7 @@
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='contributor_role']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='contributor_role'])"/>
       </xsl:when>
+
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when
@@ -736,6 +800,7 @@
             <xsl:value-of select="0"/>
           </xsl:otherwise>
         </xsl:choose>
+
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -744,6 +809,7 @@
   <!--  -->
   <xsl:variable name="publisherNameCnt">
     <xsl:choose>
+
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='publisher_name']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='publisher_name'])"/>
       </xsl:when>
@@ -755,6 +821,7 @@
     </xsl:choose>
   </xsl:variable>
   <xsl:variable name="publisherURLCnt">
+
     <xsl:choose>
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='publisher_url']) > 0">
         <xsl:value-of select="count(/nc:netcdf/nc:attribute[@name='publisher_url'])"/>
@@ -766,6 +833,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+
   <xsl:variable name="publisherEmailCnt">
     <xsl:choose>
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='publisher_email']) > 0">
@@ -777,6 +845,7 @@
         />
       </xsl:otherwise>
     </xsl:choose>
+
   </xsl:variable>
   <xsl:variable name="publisherTotal"
     select="$publisherNameCnt + $publisherURLCnt + $publisherEmailCnt"/>
@@ -788,6 +857,7 @@
     select="$creatorTotal + $contributorTotal + $publisherTotal"/>
   <xsl:variable name="responsiblePartyMax">14</xsl:variable>
   <!-- Other Fields: 2 possible -->
+
   <xsl:variable name="cdmTypeCnt">
     <xsl:choose>
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='cdm_data_type']) > 0">
@@ -799,6 +869,7 @@
         />
       </xsl:otherwise>
     </xsl:choose>
+
   </xsl:variable>
   <xsl:variable name="procLevelCnt">
     <xsl:choose>
@@ -809,6 +880,7 @@
         <xsl:choose>
           <xsl:when
             test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='processing_level']) > 0">
+
             <xsl:value-of select="1"/>
           </xsl:when>
           <xsl:otherwise>
@@ -818,6 +890,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+
   <xsl:variable name="licenseCnt">
     <xsl:choose>
       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='license']) > 0">
@@ -828,6 +901,7 @@
           <xsl:when
             test="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='rights']) > 0">
             <xsl:value-of select="1"/>
+
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of select="0"/>
@@ -837,6 +911,7 @@
     </xsl:choose>
   </xsl:variable>
   <xsl:variable name="otherTotal" select="$cdmTypeCnt + $procLevelCnt + $licenseCnt"/>
+
   <xsl:variable name="otherMax">3</xsl:variable>
 
   <xsl:variable name="spiralTotal"
@@ -848,6 +923,7 @@
   <!--    Write ISO Metadata  -->
   <!--                        -->
   <xsl:template match="/">
+
     <gmi:MI_Metadata>
       <xsl:attribute name="xsi:schemaLocation">
         <xsl:value-of
@@ -859,6 +935,7 @@
           <xsl:when test="$idCnt">
             <gco:CharacterString>
               <!-- Thredds id takes precedence -->
+
               <xsl:choose>
                 <xsl:when
                   test="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='id']">
@@ -871,6 +948,7 @@
                     <xsl:when test="/nc:netcdf/nc:attribute[@name='naming_authority']">
                       <xsl:value-of
                         select="/nc:netcdf/nc:attribute[@name='naming_authority']/@value"/>: </xsl:when>
+
                     <xsl:otherwise>
                       <xsl:value-of select="/nc:netcdf/nc:attribute[@name='id']/@value"/>
                     </xsl:otherwise>
@@ -880,6 +958,7 @@
             </gco:CharacterString>
           </xsl:when>
           <xsl:otherwise>
+
             <xsl:attribute name="gco:nilReason">
               <xsl:value-of select="'missing'"/>
             </xsl:attribute>
@@ -889,6 +968,7 @@
       <gmd:language>
         <xsl:call-template name="writeCodelist">
           <xsl:with-param name="codeListName" select="'gmd:LanguageCode'"/>
+
           <xsl:with-param name="codeListValue" select="'eng'"/>
         </xsl:call-template>
       </gmd:language>
@@ -898,6 +978,7 @@
           <xsl:with-param name="codeListValue" select="'UTF8'"/>
         </xsl:call-template>
       </gmd:characterSet>
+
       <gmd:hierarchyLevel>
         <xsl:call-template name="writeCodelist">
           <xsl:with-param name="codeListName" select="'gmd:MD_ScopeCode'"/>
@@ -907,6 +988,7 @@
       <xsl:if test="$serviceTotal">
         <gmd:hierarchyLevel>
           <xsl:call-template name="writeCodelist">
+
             <xsl:with-param name="codeListName" select="'gmd:MD_ScopeCode'"/>
             <xsl:with-param name="codeListValue" select="'service'"/>
           </xsl:call-template>
@@ -916,6 +998,7 @@
         <xsl:attribute name="gco:nilReason">
           <xsl:value-of select="'unknown'"/>
         </xsl:attribute>
+
       </gmd:contact>
       <gmd:dateStamp>
         <gco:Date>
@@ -927,6 +1010,7 @@
       <gmd:metadataStandardName>
         <gco:CharacterString>ISO 19115-2 Geographic Information - Metadata Part 2 Extensions for
           imagery and gridded data</gco:CharacterString>
+
       </gmd:metadataStandardName>
       <gmd:metadataStandardVersion>
         <gco:CharacterString>ISO 19115-2:2009(E)</gco:CharacterString>
@@ -935,6 +1019,7 @@
         <xsl:choose>
           <xsl:when test="$dimensionCnt">
             <gmd:MD_GridSpatialRepresentation>
+
               <gmd:numberOfDimensions>
                 <gco:Integer>
                   <xsl:value-of
@@ -947,6 +1032,7 @@
                   <xsl:with-param name="dimensionType" select="'column'"/>
                   <xsl:with-param name="dimensionUnits"
                     select="/nc:netcdf/nc:attribute[@name='geospatial_lon_units']/@value"/>
+
                   <xsl:with-param name="dimensionResolution"
                     select="/nc:netcdf/nc:attribute[@name='geospatial_lon_resolution']/@value"/>
                 </xsl:call-template>
@@ -959,6 +1045,7 @@
                   <xsl:with-param name="dimensionResolution"
                     select="/nc:netcdf/nc:attribute[@name='geospatial_lat_resolution']/@value"/>
                 </xsl:call-template>
+
               </xsl:if>
               <xsl:if test="$vertical_unitsCnt">
                 <xsl:call-template name="writeDimension">
@@ -971,6 +1058,7 @@
                 </xsl:call-template>
               </xsl:if>
               <xsl:if test="$timeResCnt">
+
                 <xsl:call-template name="writeDimension">
                   <xsl:with-param name="dimensionType" select="'temporal'"/>
                   <xsl:with-param name="dimensionUnits" select="'unknown'"/>
@@ -981,6 +1069,7 @@
               <xsl:for-each select="/nc:netcdf/nc:dimension">
                 <xsl:call-template name="writeDimension">
                   <xsl:with-param name="dimensionName" select="@name"/>
+
                   <xsl:with-param name="dimensionType" select="'unknown'"/>
                   <xsl:with-param name="dimensionUnits"/>
                   <xsl:with-param name="dimensionResolution"/>
@@ -990,6 +1079,7 @@
               <gmd:cellGeometry>
                 <xsl:call-template name="writeCodelist">
                   <xsl:with-param name="codeListName" select="'gmd:MD_CellGeometryCode'"/>
+
                   <xsl:with-param name="codeListValue" select="'area'"/>
                 </xsl:call-template>
               </gmd:cellGeometry>
@@ -999,6 +1089,7 @@
           <xsl:otherwise>
             <xsl:attribute name="gco:nilReason">
               <xsl:value-of select="'missing'"/>
+
             </xsl:attribute>
           </xsl:otherwise>
         </xsl:choose>
@@ -1008,6 +1099,7 @@
           <gmd:citation>
             <gmd:CI_Citation>
               <gmd:title>
+
                 <!-- Netcdf takes precedence -->
                 <xsl:choose>
                   <xsl:when test="/nc:netcdf/nc:attribute[@name='title']">
@@ -1018,6 +1110,7 @@
                     </xsl:call-template>
                   </xsl:when>
                   <xsl:otherwise>
+
                     <xsl:call-template name="writeCharacterString">
                       <xsl:with-param name="testValue" select="$titleCnt"/>
                       <xsl:with-param name="stringToWrite"
@@ -1029,6 +1122,7 @@
               </gmd:title>
               <xsl:choose>
                 <xsl:when test="$dateCnt">
+
                   <xsl:if test="/nc:netcdf/nc:attribute[@name='date_created']">
                     <xsl:call-template name="writeDate">
                       <xsl:with-param name="testValue" select="$creatorDateCnt"/>
@@ -1040,6 +1134,7 @@
                   <xsl:if
                     test="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='dates']/nc:attribute[@type='created']">
                     <xsl:call-template name="writeDate">
+
                       <xsl:with-param name="testValue" select="$creatorDateCnt"/>
                       <xsl:with-param name="dateToWrite"
                         select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='dates']/nc:attribute[@type='created']/@value"/>
@@ -1051,6 +1146,7 @@
                       <xsl:with-param name="testValue" select="$issuedDateCnt"/>
                       <xsl:with-param name="dateToWrite"
                         select="/nc:netcdf/nc:attribute[@name='date_issued']/@value"/>
+
                       <xsl:with-param name="dateType" select="'issued'"/>
                     </xsl:call-template>
                   </xsl:if>
@@ -1062,6 +1158,7 @@
                         select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='dates']/nc:attribute[@type='created']/@value"/>
                       <xsl:with-param name="dateType" select="'creation'"/>
                     </xsl:call-template>
+
                   </xsl:if>
                   <xsl:if test="/nc:netcdf/nc:attribute[@name='date_modified']">
                     <xsl:call-template name="writeDate">
@@ -1073,6 +1170,7 @@
                   </xsl:if>
                   <xsl:if
                     test="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='dates']/nc:attribute[@type='modified']">
+
                     <xsl:call-template name="writeDate">
                       <xsl:with-param name="testValue" select="$modifiedDateCnt"/>
                       <xsl:with-param name="dateToWrite"
@@ -1083,6 +1181,7 @@
                 </xsl:when>
                 <xsl:otherwise>
                   <gmd:date>
+
                     <xsl:attribute name="gco:nilReason">
                       <xsl:value-of select="'missing'"/>
                     </xsl:attribute>
@@ -1092,6 +1191,7 @@
               <gmd:identifier>
                 <xsl:choose>
                   <xsl:when test="$idCnt">
+
                     <gmd:MD_Identifier>
                       <xsl:choose>
                         <xsl:when test="/nc:netcdf/nc:attribute[@name='naming_authority']">
@@ -1103,6 +1203,7 @@
                                     select="/nc:netcdf/nc:attribute[@name='naming_authority']/@value"
                                   />
                                 </gco:CharacterString>
+
                               </gmd:title>
                               <gmd:date>
                                 <xsl:attribute name="gco:nilReason">
@@ -1112,6 +1213,7 @@
                             </gmd:CI_Citation>
                           </gmd:authority>
                         </xsl:when>
+
                         <xsl:otherwise>
                           <gmd:authority>
                             <gmd:CI_Citation>
@@ -1123,6 +1225,7 @@
                                 </gco:CharacterString>
                               </gmd:title>
                               <gmd:date>
+
                                 <xsl:attribute name="gco:nilReason">
                                   <xsl:value-of select="'inapplicable'"/>
                                 </xsl:attribute>
@@ -1132,6 +1235,7 @@
                         </xsl:otherwise>
                       </xsl:choose>
                       <gmd:code>
+
                         <!--  Just use THREDDs id as it's guaranteed to be unique -->
                         <gco:CharacterString>
                           <xsl:value-of
@@ -1143,6 +1247,7 @@
                   </xsl:when>
                   <xsl:otherwise>
                     <xsl:attribute name="gco:nilReason">
+
                       <xsl:value-of select="'missing'"/>
                     </xsl:attribute>
                   </xsl:otherwise>
@@ -1152,6 +1257,7 @@
                 <xsl:when test="$creatorTotal + $contributorTotal">
                   <xsl:if test="$creatorTotal">
                     <xsl:if test="/nc:netcdf/nc:attribute[@name='creator_name']">
+
                       <xsl:call-template name="writeResponsibleParty">
                         <xsl:with-param name="tagName" select="'gmd:citedResponsibleParty'"/>
                         <xsl:with-param name="testValue" select="$creatorTotal"/>
@@ -1165,6 +1271,7 @@
                           select="/nc:netcdf/nc:attribute[@name='creator_url']/@value"/>
                         <xsl:with-param name="roleCode" select="'originator'"/>
                       </xsl:call-template>
+
                     </xsl:if>
                     <xsl:if
                       test="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='creators']/nc:group[@name='creator']/nc:attribute[@name='name']">
@@ -1179,6 +1286,7 @@
                           select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='creators']/nc:group[@name='creator']/nc:attribute[@name='email']/@value"/>
                         <xsl:with-param name="url"
                           select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='creators']/nc:group[@name='creator']/nc:attribute[@name='url']/@value"/>
+
                         <xsl:with-param name="roleCode" select="'originator'"/>
                       </xsl:call-template>
                     </xsl:if>
@@ -1188,6 +1296,7 @@
                       <xsl:call-template name="writeResponsibleParty">
                         <xsl:with-param name="tagName" select="'gmd:citedResponsibleParty'"/>
                         <xsl:with-param name="testValue" select="$contributorTotal"/>
+
                         <xsl:with-param name="individualName"
                           select="/nc:netcdf/nc:attribute[@name='contributor_name']/@value"/>
                         <xsl:with-param name="organisationName"/>
@@ -1200,6 +1309,7 @@
                     <xsl:for-each
                       select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='contributors']/nc:group[@name='contributor']">
                       <xsl:call-template name="writeResponsibleParty">
+
                         <xsl:with-param name="tagName" select="'gmd:citedResponsibleParty'"/>
                         <xsl:with-param name="testValue" select="$contributorTotal"/>
                         <xsl:with-param name="individualName"
@@ -1210,6 +1320,7 @@
                         <xsl:with-param name="roleCode" select="nc:attribute[@name='role']/@value"/>
                       </xsl:call-template>
                     </xsl:for-each>
+
                   </xsl:if>
                 </xsl:when>
                 <xsl:otherwise>
@@ -1219,6 +1330,7 @@
                     </xsl:attribute>
                   </gmd:citedResponsibleParty>
                 </xsl:otherwise>
+
               </xsl:choose>
               <xsl:if test="$commentCnt">
                 <gmd:otherCitationDetails>
@@ -1228,6 +1340,7 @@
                         <xsl:value-of select="/nc:netcdf/nc:attribute[@name='comment']/@value"/>
                       </xsl:when>
                       <xsl:otherwise>
+
                         <xsl:value-of
                           select="c/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/@value"
                         />
@@ -1239,6 +1352,7 @@
             </gmd:CI_Citation>
           </gmd:citation>
           <gmd:abstract>
+
             <xsl:choose>
               <xsl:when test="count(/nc:netcdf/nc:attribute[@name='summary']) > 0">
                 <xsl:call-template name="writeCharacterString">
@@ -1249,6 +1363,7 @@
               </xsl:when>
               <xsl:otherwise>
                 <xsl:call-template name="writeCharacterString">
+
                   <xsl:with-param name="testValue" select="$summaryCnt"/>
                   <xsl:with-param name="stringToWrite"
                     select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='summary']/@value"
@@ -1260,6 +1375,7 @@
           <gmd:credit>
             <xsl:choose>
               <xsl:when test="count(/nc:netcdf/nc:attribute[@name='acknowledgment']) > 0">
+
                 <xsl:call-template name="writeCharacterString">
                   <xsl:with-param name="testValue" select="$creatorAckCnt"/>
                   <xsl:with-param name="stringToWrite"
@@ -1272,6 +1388,7 @@
                   <xsl:with-param name="stringToWrite"
                     select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='funding']/@value"
                   />
+
                 </xsl:call-template>
               </xsl:otherwise>
             </xsl:choose>
@@ -1282,6 +1399,7 @@
               <gmd:MD_Keywords>
                 <xsl:choose>
                   <xsl:when test="count(/nc:netcdf/nc:attribute[@name='keywords']) > 0">
+
                     <gmd:keyword>
                       <gco:CharacterString>
                         <xsl:value-of select="/nc:netcdf/nc:attribute[@name='keywords']/@value"/>
@@ -1292,6 +1410,7 @@
                     <xsl:for-each
                       select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='keywords']/nc:attribute[@name='keyword']">
                       <gmd:keyword>
+
                         <gco:CharacterString>
                           <xsl:value-of select="@value"/>
                         </gco:CharacterString>
@@ -1301,6 +1420,7 @@
                 </xsl:choose>
                 <gmd:type>
                   <xsl:call-template name="writeCodelist">
+
                     <xsl:with-param name="codeListName" select="'gmd:MD_KeywordTypeCode'"/>
                     <xsl:with-param name="codeListValue" select="'theme'"/>
                   </xsl:call-template>
@@ -1310,6 +1430,7 @@
                     <gmd:title>
                       <gco:CharacterString>
                         <xsl:choose>
+
                           <xsl:when
                             test="count(/nc:netcdf/nc:attribute[@name='keywords_vocabulary']) > 0">
                             <xsl:value-of
@@ -1323,6 +1444,7 @@
                         </xsl:choose>
                       </gco:CharacterString>
                     </gmd:title>
+
                     <gmd:date>
                       <xsl:attribute name="gco:nilReason">
                         <xsl:value-of select="'unknown'"/>
@@ -1332,6 +1454,7 @@
                 </gmd:thesaurusName>
               </gmd:MD_Keywords>
             </gmd:descriptiveKeywords>
+
           </xsl:if>
           <xsl:if
             test="count(/nc:netcdf/nc:attribute[@name='project']) > 0 or count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='projects']/nc:attribute[@name='project']) > 0">
@@ -1342,6 +1465,7 @@
                     <gmd:keyword>
                       <gco:CharacterString>
                         <xsl:value-of select="/nc:netcdf/nc:attribute[@name='project']/@value"/>
+
                       </gco:CharacterString>
                     </gmd:keyword>
                   </xsl:when>
@@ -1352,6 +1476,7 @@
                         <gco:CharacterString>
                           <xsl:value-of select="@value"/>
                         </gco:CharacterString>
+
                       </gmd:keyword>
                     </xsl:for-each>
                   </xsl:otherwise>
@@ -1361,6 +1486,7 @@
                     <xsl:with-param name="codeListName" select="'gmd:MD_KeywordTypeCode'"/>
                     <xsl:with-param name="codeListValue" select="'project'"/>
                   </xsl:call-template>
+
                 </gmd:type>
                 <gmd:thesaurusName>
                   <xsl:attribute name="gco:nilReason">
@@ -1370,6 +1496,7 @@
               </gmd:MD_Keywords>
             </gmd:descriptiveKeywords>
           </xsl:if>
+
           <xsl:if
             test="count(/nc:netcdf/nc:attribute[@name='publisher_name']) > 0 or count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='publisher']) > 0">
             <gmd:descriptiveKeywords>
@@ -1381,6 +1508,7 @@
                         <xsl:value-of
                           select="/nc:netcdf/nc:attribute[@name='publisher_name']/@value"/>
                       </gco:CharacterString>
+
                     </gmd:keyword>
                   </xsl:when>
                   <xsl:otherwise>
@@ -1391,6 +1519,7 @@
                           <xsl:value-of select="nc:attribute[@type='name']/@value"/>
                         </gco:CharacterString>
                       </gmd:keyword>
+
                     </xsl:for-each>
                   </xsl:otherwise>
                 </xsl:choose>
@@ -1400,6 +1529,7 @@
                     <xsl:with-param name="codeListValue" select="'dataCenter'"/>
                   </xsl:call-template>
                 </gmd:type>
+
                 <gmd:thesaurusName>
                   <xsl:attribute name="gco:nilReason">
                     <xsl:value-of select="'unknown'"/>
@@ -1409,6 +1539,7 @@
             </gmd:descriptiveKeywords>
           </xsl:if>
           <xsl:if test="$standardNameCnt">
+
             <gmd:descriptiveKeywords>
               <gmd:MD_Keywords>
                 <xsl:for-each select="/nc:netcdf/nc:variable/nc:attribute[@name='standard_name']">
@@ -1418,6 +1549,7 @@
                     </gco:CharacterString>
                   </gmd:keyword>
                 </xsl:for-each>
+
                 <gmd:type>
                   <xsl:call-template name="writeCodelist">
                     <xsl:with-param name="codeListName" select="'gmd:MD_KeywordTypeCode'"/>
@@ -1427,6 +1559,7 @@
                 <gmd:thesaurusName>
                   <gmd:CI_Citation>
                     <gmd:title>
+
                       <xsl:call-template name="writeCharacterString">
                         <xsl:with-param name="testValue" select="$stdNameVocabCnt"/>
                         <xsl:with-param name="stringToWrite"
@@ -1438,6 +1571,7 @@
                   </gmd:CI_Citation>
                 </gmd:thesaurusName>
               </gmd:MD_Keywords>
+
             </gmd:descriptiveKeywords>
           </xsl:if>
           <xsl:if test="$licenseCnt">
@@ -1447,6 +1581,7 @@
                   <gco:CharacterString>
                     <xsl:choose>
                       <xsl:when test="count(/nc:netcdf/nc:attribute[@name='license']) > 0">
+
                         <xsl:value-of select="/nc:netcdf/nc:attribute[@name='license']/@value"/>
                       </xsl:when>
                       <xsl:otherwise>
@@ -1458,6 +1593,7 @@
                   </gco:CharacterString>
                 </gmd:useLimitation>
               </gmd:MD_LegalConstraints>
+
             </gmd:resourceConstraints>
           </xsl:if>
           <xsl:if test="$creatorProjCnt">
@@ -1467,6 +1603,7 @@
                   <xsl:when test="count(/nc:netcdf/nc:attribute[@name='project']) > 0">
                     <gmd:aggregateDataSetName>
                       <gmd:CI_Citation>
+
                         <gmd:title>
                           <gco:CharacterString>
                             <xsl:value-of select="/nc:netcdf/nc:attribute[@name='project']/@value"/>
@@ -1476,6 +1613,7 @@
                       </gmd:CI_Citation>
                     </gmd:aggregateDataSetName>
                   </xsl:when>
+
                   <xsl:otherwise>
                     <xsl:for-each
                       select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='projects']/nc:attribute[@name='project']">
@@ -1486,6 +1624,7 @@
                               <xsl:value-of select="@value"/>
                             </gco:CharacterString>
                           </gmd:title>
+
                           <gmd:date gco:nilReason="inapplicable"/>
                         </gmd:CI_Citation>
                       </gmd:aggregateDataSetName>
@@ -1495,6 +1634,7 @@
                 <gmd:associationType>
                   <xsl:call-template name="writeCodelist">
                     <xsl:with-param name="codeListName" select="'gmd:DS_AssociationTypeCode'"/>
+
                     <xsl:with-param name="codeListValue" select="'largerWorkCitation'"/>
                   </xsl:call-template>
                 </gmd:associationType>
@@ -1504,6 +1644,7 @@
                     <xsl:with-param name="codeListValue" select="'project'"/>
                   </xsl:call-template>
                 </gmd:initiativeType>
+
               </gmd:MD_AggregateInformation>
             </gmd:aggregationInfo>
           </xsl:if>
@@ -1513,6 +1654,7 @@
                 <gmd:aggregateDataSetIdentifier>
                   <gmd:MD_Identifier>
                     <gmd:authority>
+
                       <gmd:CI_Citation>
                         <gmd:title>
                           <gco:CharacterString>Unidata Common Data Model</gco:CharacterString>
@@ -1521,6 +1663,7 @@
                       </gmd:CI_Citation>
                     </gmd:authority>
                     <gmd:code>
+
                       <gco:CharacterString>
                         <xsl:choose>
                           <xsl:when test="count(/nc:netcdf/nc:attribute[@name='cdm_data_type']) > 0">
@@ -1533,6 +1676,7 @@
                             />
                           </xsl:otherwise>
                         </xsl:choose>
+
                       </gco:CharacterString>
                     </gmd:code>
                   </gmd:MD_Identifier>
@@ -1542,6 +1686,7 @@
                     <xsl:with-param name="codeListName" select="'gmd:DS_AssociationTypeCode'"/>
                     <xsl:with-param name="codeListValue" select="'largerWorkCitation'"/>
                   </xsl:call-template>
+
                 </gmd:associationType>
                 <gmd:initiativeType>
                   <xsl:call-template name="writeCodelist">
@@ -1551,6 +1696,7 @@
                 </gmd:initiativeType>
               </gmd:MD_AggregateInformation>
             </gmd:aggregationInfo>
+
           </xsl:if>
           <gmd:language>
             <gco:CharacterString>eng</gco:CharacterString>
@@ -1559,6 +1705,7 @@
             <gmd:MD_TopicCategoryCode>climatologyMeteorologyAtmosphere</gmd:MD_TopicCategoryCode>
           </gmd:topicCategory>
           <gmd:extent>
+
             <xsl:choose>
               <xsl:when test="$extentTotal">
                 <gmd:EX_Extent>
@@ -1568,6 +1715,7 @@
                   <xsl:if test="$geospatial_lat_minCnt > 0">
                     <gmd:geographicElement>
                       <gmd:EX_GeographicBoundingBox id="boundingGeographicBoundingBox">
+
                         <gmd:extentTypeCode>
                           <gco:Boolean>1</gco:Boolean>
                         </gmd:extentTypeCode>
@@ -1576,6 +1724,7 @@
                             <xsl:choose>
                               <xsl:when test="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lon_min']">
                                 <xsl:value-of select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lon_min']/@value" />
+
                               </xsl:when>
                               <xsl:otherwise>
                                 <xsl:if test="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lon_min']">
@@ -1585,6 +1734,7 @@
                             </xsl:choose>
                           </gco:Decimal>
                         </gmd:westBoundLongitude>
+
                         <gmd:eastBoundLongitude>
                           <gco:Decimal>
                             <xsl:choose>
@@ -1594,6 +1744,7 @@
                               <xsl:otherwise>
                                 <xsl:value-of select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lon_max']/@value" />
                               </xsl:otherwise>
+
                             </xsl:choose>
                           </gco:Decimal>
                         </gmd:eastBoundLongitude>
@@ -1603,6 +1754,7 @@
                               <xsl:when test="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_min']">
                                 <xsl:value-of select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_min']/@value" />
                               </xsl:when>
+
                               <xsl:otherwise>
                                 <xsl:value-of select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lat_min']/@value" />
                               </xsl:otherwise>
@@ -1612,6 +1764,7 @@
                         <gmd:northBoundLatitude>
                           <gco:Decimal>
                             <xsl:choose>
+
                               <xsl:when test="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_max']">
                                 <xsl:value-of select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_max']/@value" />
                               </xsl:when>
@@ -1621,6 +1774,7 @@
                             </xsl:choose> 
                           </gco:Decimal>
                         </gmd:northBoundLatitude>
+
                       </gmd:EX_GeographicBoundingBox>
                     </gmd:geographicElement>
                   </xsl:if>
@@ -1630,6 +1784,7 @@
                         <xsl:attribute name="id">
                           <xsl:value-of select="'boundingTemporalExtent'"/>
                         </xsl:attribute>
+
                         <gmd:extent>
                           <gml:TimePeriod gml:id="timePeriod_id">
                             <gml:beginPosition>
@@ -1639,6 +1794,7 @@
                                 </xsl:when>
                                 <xsl:otherwise>
                                   <xsl:value-of select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='time_coverage_start']/@value" />
+
                                 </xsl:otherwise>
                               </xsl:choose> 
                             </gml:beginPosition>
@@ -1648,6 +1804,7 @@
                                   <xsl:value-of select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_end']/@value" />
                                 </xsl:when>
                                 <xsl:otherwise>
+
                                   <xsl:value-of select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='time_coverage_end']/@value" />
                                 </xsl:otherwise>
                               </xsl:choose> 
@@ -1657,6 +1814,7 @@
                       </gmd:EX_TemporalExtent>
                     </gmd:temporalElement>
                   </xsl:if>
+
                   <xsl:if test="$vertical_minCnt > 0">
                     <gmd:verticalElement>
                       <gmd:EX_VerticalExtent>
@@ -1668,6 +1826,7 @@
                                 <xsl:choose>
                                   <xsl:when
                                     test="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_positive']/@value = 'down'">
+
                                     <xsl:value-of
                                       select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_min']/@value * -1"
                                     />
@@ -1681,6 +1840,7 @@
                               </xsl:when>
                               <xsl:otherwise>
                                 <xsl:choose>
+
                                   <xsl:when
                                     test="/nc:netcdf/nc:group[@name='THREDDSMetadata']//nc:attribute[@name='geospatial_vertical_positive']/@value = 'down'">
                                     <xsl:value-of
@@ -1695,6 +1855,7 @@
                                 </xsl:choose>
                               </xsl:otherwise>
                             </xsl:choose>
+
                           </gco:Real>
                         </gmd:minimumValue>
                         <gmd:maximumValue>
@@ -1708,6 +1869,7 @@
                                     <xsl:value-of
                                       select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_max']/@value * -1"
                                     />
+
                                   </xsl:when>
                                   <xsl:otherwise>
                                     <xsl:value-of
@@ -1720,6 +1882,7 @@
                                 <xsl:choose>
                                   <xsl:when
                                     test="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_vertical_positive']/@value = 'down'">
+
                                     <xsl:value-of
                                       select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_vertical_max']/@value * -1"
                                     />
@@ -1733,6 +1896,7 @@
                               </xsl:otherwise>
                             </xsl:choose>
                           </gco:Real>
+
                         </gmd:maximumValue>
                         <gmd:verticalCRS>
                           <xsl:attribute name="gco:nilReason">
@@ -1742,6 +1906,7 @@
                       </gmd:EX_VerticalExtent>
                     </gmd:verticalElement>
                   </xsl:if>
+
                 </gmd:EX_Extent>
               </xsl:when>
               <xsl:otherwise>
@@ -1751,6 +1916,7 @@
               </xsl:otherwise>
             </xsl:choose>
           </gmd:extent>
+
         </gmd:MD_DataIdentification>
       </gmd:identificationInfo>
       <xsl:if test="$thredds_opendapCnt">
@@ -1762,6 +1928,7 @@
             select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='opendap_service']/@value"
           />
         </xsl:call-template>
+
       </xsl:if>
       <xsl:if test="$thredds_wcsCnt">
         <xsl:call-template name="writeService">
@@ -1774,6 +1941,7 @@
           />
         </xsl:call-template>
       </xsl:if>
+
       <xsl:if test="$thredds_wmsCnt">
         <xsl:call-template name="writeService">
           <xsl:with-param name="serviceID" select="'OGC-WMS'"/>
@@ -1785,8 +1953,21 @@
           />
         </xsl:call-template>
       </xsl:if>
+      <xsl:if test="$thredds_sosCnt">
+
+        <xsl:call-template name="writeService">
+          <xsl:with-param name="serviceID" select="'OGC-SOS'"/>
+          <xsl:with-param name="serviceTypeName"
+            select="'Open Geospatial Consortium Sensor Observation Service (SOS)'"/>
+          <xsl:with-param name="serviceOperationName" select="'GetCapabilities'"/>
+          <xsl:with-param name="operationURL"
+            select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='sos_service']/@value"
+          />
+        </xsl:call-template>
+      </xsl:if>      
       <xsl:if test="$thredds_netcdfsubsetCnt">
         <xsl:call-template name="writeService">
+
           <xsl:with-param name="serviceID" select="'THREDDS_NetCDF_Subset'"/>
           <xsl:with-param name="serviceTypeName" select="'THREDDS NetCDF Subset Service'"/>
           <xsl:with-param name="serviceOperationName" select="'NetCDFSubsetService'"/>
@@ -1798,6 +1979,7 @@
       <xsl:if test="$variableCnt">
         <gmd:contentInfo>
           <gmi:MI_CoverageDescription>
+
             <gmd:attributeDescription>
               <xsl:attribute name="gco:nilReason">
                 <xsl:value-of select="'unknown'"/>
@@ -1807,6 +1989,7 @@
               <xsl:attribute name="gco:nilReason">
                 <xsl:value-of select="'unknown'"/>
               </xsl:attribute>
+
             </gmd:contentType>
             <xsl:for-each select="/nc:netcdf/nc:variable">
               <xsl:call-template name="writeVariable">
@@ -1817,6 +2000,7 @@
                 <xsl:with-param name="variableUnits" select="./nc:attribute[@name='units']/@value"/>
               </xsl:call-template>
             </xsl:for-each>
+
           </gmi:MI_CoverageDescription>
         </gmd:contentInfo>
       </xsl:if>
@@ -1826,6 +2010,7 @@
             <gmd:distributor>
               <gmd:MD_Distributor>
                 <xsl:choose>
+
                   <xsl:when test="$publisherTotal">
                     <xsl:choose>
                       <xsl:when test="/nc:netcdf/nc:attribute[@name='publisher_name']">
@@ -1837,6 +2022,7 @@
                             select="/nc:netcdf/nc:attribute[@name='publisher_name']/@value"/>
                           <xsl:with-param name="email"
                             select="/nc:netcdf/nc:attribute[@name='publisher_email']/@value"/>
+
                           <xsl:with-param name="url"
                             select="/nc:netcdf/nc:attribute[@name='publisher_url']/@value"/>
                           <xsl:with-param name="urlName" select="'URL for the data publisher'"/>
@@ -1848,6 +2034,7 @@
                       <xsl:otherwise>
                         <xsl:call-template name="writeResponsibleParty">
                           <xsl:with-param name="tagName" select="'gmd:distributorContact'"/>
+
                           <xsl:with-param name="testValue" select="$publisherTotal"/>
                           <xsl:with-param name="individualName"/>
                           <xsl:with-param name="organisationName"
@@ -1861,6 +2048,7 @@
                             select="'This URL provides contact information for the publisher of this dataset'"/>
                           <xsl:with-param name="roleCode" select="'publisher'"/>
                         </xsl:call-template>
+
                       </xsl:otherwise>
                     </xsl:choose>
                   </xsl:when>
@@ -1870,6 +2058,7 @@
                 </xsl:choose>
                 <gmd:distributorFormat>
                   <gmd:MD_Format>
+
                     <gmd:name>
                       <gco:CharacterString>OPeNDAP</gco:CharacterString>
                     </gmd:name>
@@ -1878,6 +2067,7 @@
                 </gmd:distributorFormat>
                 <xsl:if test="$thredds_opendapCnt">
                   <gmd:distributorTransferOptions>
+
                     <gmd:MD_DigitalTransferOptions>
                       <gmd:onLine>
                         <gmd:CI_OnlineResource>
@@ -1889,6 +2079,7 @@
                             </gmd:URL>
                           </gmd:linkage>
                           <gmd:name>
+
                             <gco:CharacterString>File Information</gco:CharacterString>
                           </gmd:name>
                           <gmd:description>
@@ -1900,6 +2091,7 @@
                             <gmd:CI_OnLineFunctionCode
                               codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_OnLineFunctionCode"
                               codeListValue="download">download</gmd:CI_OnLineFunctionCode>
+
                           </gmd:function>
                         </gmd:CI_OnlineResource>
                       </gmd:onLine>
@@ -1909,6 +2101,7 @@
               </gmd:MD_Distributor>
             </gmd:distributor>
           </gmd:MD_Distribution>
+
         </gmd:distributionInfo>
       </xsl:if>
       <xsl:if test="$historyCnt">
@@ -1918,6 +2111,7 @@
               <gmd:DQ_Scope>
                 <gmd:level>
                   <xsl:call-template name="writeCodelist">
+
                     <xsl:with-param name="codeListName" select="'gmd:MD_ScopeCode'"/>
                     <xsl:with-param name="codeListValue" select="'dataset'"/>
                   </xsl:call-template>
@@ -1927,6 +2121,7 @@
             <gmd:lineage>
               <gmd:LI_Lineage>
                 <gmd:statement>
+
                   <gco:CharacterString>
                     <xsl:choose>
                       <xsl:when test="/nc:netcdf/nc:attribute[@name='history']">
@@ -1938,6 +2133,7 @@
                         />
                       </xsl:otherwise>
                     </xsl:choose>
+
                   </gco:CharacterString>
                 </gmd:statement>
               </gmd:LI_Lineage>
@@ -1947,6 +2143,7 @@
       </xsl:if>
       <gmd:metadataMaintenance>
         <gmd:MD_MaintenanceInformation>
+
           <gmd:maintenanceAndUpdateFrequency gco:nilReason="unknown"/>
           <gmd:maintenanceNote>
             <gco:CharacterString>This record was translated from NcML using UnidataDD2MI.xsl Version
@@ -1956,6 +2153,7 @@
       </gmd:metadataMaintenance>
     </gmi:MI_Metadata>
   </xsl:template>
+
   <xsl:template name="writeCodelist">
     <xsl:param name="codeListName"/>
     <xsl:param name="codeListValue"/>
@@ -1966,6 +2164,7 @@
         <xsl:value-of select="$codeListLocation"/>
         <xsl:value-of select="'#'"/>
         <xsl:value-of select="$codeListName"/>
+
       </xsl:attribute>
       <xsl:attribute name="codeListValue">
         <xsl:value-of select="$codeListValue"/>
@@ -1975,6 +2174,7 @@
   </xsl:template>
   <xsl:template name="writeCharacterString">
     <xsl:param name="testValue"/>
+
     <xsl:param name="stringToWrite"/>
     <xsl:choose>
       <xsl:when test="$testValue">
@@ -1984,6 +2184,7 @@
       </xsl:when>
       <xsl:otherwise>
         <xsl:attribute name="gco:nilReason">
+
           <xsl:value-of select="'missing'"/>
         </xsl:attribute>
       </xsl:otherwise>
@@ -1993,6 +2194,7 @@
     <xsl:param name="testValue"/>
     <xsl:param name="dateToWrite"/>
     <xsl:param name="dateType"/>
+
     <xsl:if test="$testValue">
       <xsl:choose>
         <xsl:when test="contains($dateToWrite, 'T' ) ">
@@ -2002,6 +2204,7 @@
                 <gco:DateTime>
                   <xsl:value-of select="$dateToWrite"/>
                 </gco:DateTime>
+
               </gmd:date>
               <gmd:dateType>
                 <xsl:call-template name="writeCodelist">
@@ -2011,6 +2214,7 @@
               </gmd:dateType>
             </gmd:CI_Date>
           </gmd:date>
+
         </xsl:when>
         <xsl:otherwise>
           <gmd:date>
@@ -2020,6 +2224,7 @@
                   <xsl:value-of select="$dateToWrite"/>
                 </gco:Date>
               </gmd:date>
+
               <gmd:dateType>
                 <xsl:call-template name="writeCodelist">
                   <xsl:with-param name="codeListName" select="'gmd:CI_DateTypeCode'"/>
@@ -2029,6 +2234,7 @@
             </gmd:CI_Date>
           </gmd:date>
         </xsl:otherwise>
+
       </xsl:choose>
     </xsl:if>
   </xsl:template>
@@ -2038,6 +2244,7 @@
     <xsl:param name="individualName"/>
     <xsl:param name="organisationName"/>
     <xsl:param name="email"/>
+
     <xsl:param name="url"/>
     <xsl:param name="urlName"/>
     <xsl:param name="urlDescription"/>
@@ -2047,6 +2254,7 @@
         <xsl:element name="{$tagName}">
           <gmd:CI_ResponsibleParty>
             <gmd:individualName>
+
               <xsl:call-template name="writeCharacterString">
                 <xsl:with-param name="testValue" select="$individualName"/>
                 <xsl:with-param name="stringToWrite" select="$individualName"/>
@@ -2056,6 +2264,7 @@
               <xsl:call-template name="writeCharacterString">
                 <xsl:with-param name="testValue" select="$organisationName"/>
                 <xsl:with-param name="stringToWrite" select="$organisationName"/>
+
               </xsl:call-template>
             </gmd:organisationName>
             <gmd:contactInfo>
@@ -2065,6 +2274,7 @@
                     <xsl:if test="$email">
                       <gmd:address>
                         <gmd:CI_Address>
+
                           <gmd:electronicMailAddress>
                             <gco:CharacterString>
                               <xsl:value-of select="$email"/>
@@ -2074,6 +2284,7 @@
                       </gmd:address>
                     </xsl:if>
                     <xsl:if test="$url">
+
                       <gmd:onlineResource>
                         <gmd:CI_OnlineResource>
                           <gmd:linkage>
@@ -2083,6 +2294,7 @@
                           </gmd:linkage>
                           <gmd:protocol>
                             <gco:CharacterString>http</gco:CharacterString>
+
                           </gmd:protocol>
                           <gmd:applicationProfile>
                             <gco:CharacterString>web browser</gco:CharacterString>
@@ -2091,6 +2303,7 @@
                             <gco:CharacterString>
                               <xsl:value-of select="$urlName"/>
                             </gco:CharacterString>
+
                           </gmd:name>
                           <gmd:description>
                             <gco:CharacterString>
@@ -2101,6 +2314,7 @@
                             <xsl:call-template name="writeCodelist">
                               <xsl:with-param name="codeListName"
                                 select="'gmd:CI_OnLineFunctionCode'"/>
+
                               <xsl:with-param name="codeListValue" select="'information'"/>
                             </xsl:call-template>
                           </gmd:function>
@@ -2110,6 +2324,7 @@
                   </gmd:CI_Contact>
                 </xsl:when>
                 <xsl:otherwise>
+
                   <xsl:attribute name="gco:nilReason">
                     <xsl:value-of select="'missing'"/>
                   </xsl:attribute>
@@ -2119,6 +2334,7 @@
             <gmd:role>
               <xsl:call-template name="writeCodelist">
                 <xsl:with-param name="codeListName" select="'gmd:CI_RoleCode'"/>
+
                 <xsl:with-param name="codeListValue" select="$roleCode"/>
               </xsl:call-template>
             </gmd:role>
@@ -2128,6 +2344,7 @@
     </xsl:choose>
   </xsl:template>
   <xsl:template name="writeDimension">
+
     <xsl:param name="dimensionName"/>
     <xsl:param name="dimensionType"/>
     <xsl:param name="dimensionUnits"/>
@@ -2137,6 +2354,7 @@
       <gmd:MD_Dimension>
         <xsl:if test="$dimensionName">
           <xsl:attribute name="id">
+
             <xsl:value-of select="$dimensionName"/>
           </xsl:attribute>
         </xsl:if>
@@ -2146,6 +2364,7 @@
             <xsl:with-param name="codeListValue" select="$dimensionType"/>
           </xsl:call-template>
         </gmd:dimensionName>
+
         <xsl:choose>
           <xsl:when test="$dimensionSize">
             <gmd:dimensionSize>
@@ -2155,6 +2374,7 @@
             </gmd:dimensionSize>
           </xsl:when>
           <xsl:otherwise>
+
             <gmd:dimensionSize>
               <xsl:attribute name="gco:nilReason">
                 <xsl:value-of select="'unknown'"/>
@@ -2164,6 +2384,7 @@
         </xsl:choose>
         <gmd:resolution>
           <xsl:choose>
+
             <xsl:when test="$dimensionUnits and $dimensionResolution">
               <gco:Measure>
                 <xsl:attribute name="uom">
@@ -2173,6 +2394,7 @@
               </gco:Measure>
             </xsl:when>
             <xsl:when test="$dimensionUnits and not($dimensionResolution)">
+
               <gco:Measure>
                 <xsl:attribute name="uom">
                   <xsl:value-of select="$dimensionUnits"/>
@@ -2182,6 +2404,7 @@
             </xsl:when>
             <xsl:when test="not($dimensionUnits) and $dimensionResolution">
               <gco:Measure>
+
                 <xsl:attribute name="uom">
                   <xsl:value-of select="'unknown'"/>
                 </xsl:attribute>
@@ -2191,6 +2414,7 @@
             <xsl:otherwise>
               <xsl:attribute name="gco:nilReason">
                 <xsl:value-of select="'missing'"/>
+
               </xsl:attribute>
             </xsl:otherwise>
           </xsl:choose>
@@ -2200,6 +2424,7 @@
   </xsl:template>
   <xsl:template name="writeVariable">
     <xsl:param name="variableName"/>
+
     <xsl:param name="variableLongName"/>
     <xsl:param name="variableType"/>
     <xsl:param name="variableUnits"/>
@@ -2209,6 +2434,7 @@
           <gco:MemberName>
             <gco:aName>
               <gco:CharacterString>
+
                 <xsl:value-of select="$variableName"/>
               </gco:CharacterString>
             </gco:aName>
@@ -2218,6 +2444,7 @@
                   <gco:CharacterString>
                     <xsl:value-of select="$variableType"/>
                   </gco:CharacterString>
+
                 </gco:aName>
               </gco:TypeName>
             </gco:attributeType>
@@ -2227,6 +2454,7 @@
           <xsl:call-template name="writeCharacterString">
             <xsl:with-param name="testValue" select="$variableLongName"/>
             <xsl:with-param name="stringToWrite" select="$variableLongName"/>
+
           </xsl:call-template>
         </gmd:descriptor>
         <gmd:units>
@@ -2236,6 +2464,7 @@
           </xsl:attribute>
         </gmd:units>
       </gmd:MD_Band>
+
     </gmd:dimension>
   </xsl:template>
   <xsl:template name="writeService">
@@ -2245,6 +2474,7 @@
     <xsl:param name="operationURL"/>
     <gmd:identificationInfo>
       <xsl:element name="srv:SV_ServiceIdentification">
+
         <xsl:attribute name="id">
           <xsl:value-of select="$serviceID"/>
         </xsl:attribute>
@@ -2254,6 +2484,7 @@
               <xsl:choose>
                 <xsl:when test="/nc:netcdf/nc:attribute[@name='title']">
                   <xsl:call-template name="writeCharacterString">
+
                     <xsl:with-param name="testValue" select="$titleCnt"/>
                     <xsl:with-param name="stringToWrite"
                       select="concat(/nc:netcdf/nc:attribute[@name='title']/@value,' ',$serviceTypeName)"
@@ -2267,6 +2498,7 @@
                       select="concat(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='full_name']/@value,' ',$serviceTypeName)"
                     />
                   </xsl:call-template>
+
                 </xsl:otherwise>
               </xsl:choose>
             </gmd:title>
@@ -2277,6 +2509,7 @@
                     <xsl:with-param name="testValue" select="$creatorDateCnt"/>
                     <xsl:with-param name="dateToWrite"
                       select="/nc:netcdf/nc:attribute[@name='date_created']/@value"/>
+
                     <xsl:with-param name="dateType" select="'creation'"/>
                   </xsl:call-template>
                 </xsl:if>
@@ -2288,6 +2521,7 @@
                       select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='dates']/nc:attribute[@type='created']/@value"/>
                     <xsl:with-param name="dateType" select="'creation'"/>
                   </xsl:call-template>
+
                 </xsl:if>
                 <xsl:if test="/nc:netcdf/nc:attribute[@name='date_issued']">
                   <xsl:call-template name="writeDate">
@@ -2299,6 +2533,7 @@
                 </xsl:if>
                 <xsl:if
                   test="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='dates']/nc:attribute[@type='issued']">
+
                   <xsl:call-template name="writeDate">
                     <xsl:with-param name="testValue" select="$creatorDateCnt"/>
                     <xsl:with-param name="dateToWrite"
@@ -2309,6 +2544,7 @@
                 <xsl:if test="/nc:netcdf/nc:attribute[@name='date_modified']">
                   <xsl:call-template name="writeDate">
                     <xsl:with-param name="testValue" select="$modifiedDateCnt"/>
+
                     <xsl:with-param name="dateToWrite"
                       select="/nc:netcdf/nc:attribute[@name='date_modified']/@value"/>
                     <xsl:with-param name="dateType" select="'revision'"/>
@@ -2321,6 +2557,7 @@
                     <xsl:with-param name="dateToWrite"
                       select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='dates']/nc:attribute[@type='modified']/@value"/>
                     <xsl:with-param name="dateType" select="'revision'"/>
+
                   </xsl:call-template>
                 </xsl:if>
               </xsl:when>
@@ -2330,6 +2567,7 @@
                     <xsl:value-of select="'missing'"/>
                   </xsl:attribute>
                 </gmd:date>
+
               </xsl:otherwise>
             </xsl:choose>
             <xsl:choose>
@@ -2339,6 +2577,7 @@
                     <xsl:call-template name="writeResponsibleParty">
                       <xsl:with-param name="tagName" select="'gmd:citedResponsibleParty'"/>
                       <xsl:with-param name="testValue" select="$creatorTotal"/>
+
                       <xsl:with-param name="individualName"
                         select="/nc:netcdf/nc:attribute[@name='creator_name']/@value"/>
                       <xsl:with-param name="organisationName"
@@ -2353,6 +2592,7 @@
                   <xsl:if
                     test="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='creators']/nc:group[@name='creator']/nc:attribute[@name='name']">
                     <xsl:call-template name="writeResponsibleParty">
+
                       <xsl:with-param name="tagName" select="'gmd:citedResponsibleParty'"/>
                       <xsl:with-param name="testValue" select="$creatorTotal"/>
                       <xsl:with-param name="individualName"
@@ -2366,6 +2606,7 @@
                       <xsl:with-param name="roleCode" select="'originator'"/>
                     </xsl:call-template>
                   </xsl:if>
+
                 </xsl:if>
                 <xsl:if test="$contributorTotal">
                   <xsl:if test="/nc:netcdf/nc:attribute[@name='contributor_name']">
@@ -2376,6 +2617,7 @@
                         select="/nc:netcdf/nc:attribute[@name='contributor_name']/@value"/>
                       <xsl:with-param name="organisationName"/>
                       <xsl:with-param name="email"/>
+
                       <xsl:with-param name="url"/>
                       <xsl:with-param name="roleCode"
                         select="/nc:netcdf/nc:attribute[@name='contributor_role']/@value"/>
@@ -2388,6 +2630,7 @@
                       <xsl:with-param name="testValue" select="$contributorTotal"/>
                       <xsl:with-param name="individualName"
                         select="nc:attribute[@name='name']/@value"/>
+
                       <xsl:with-param name="organisationName"/>
                       <xsl:with-param name="email"/>
                       <xsl:with-param name="url"/>
@@ -2397,6 +2640,7 @@
                 </xsl:if>
               </xsl:when>
               <xsl:otherwise>
+
                 <gmd:citedResponsibleParty>
                   <xsl:attribute name="gco:nilReason">
                     <xsl:value-of select="'missing'"/>
@@ -2406,6 +2650,7 @@
             </xsl:choose>
           </gmd:CI_Citation>
         </gmd:citation>
+
         <gmd:abstract>
           <xsl:choose>
             <xsl:when test="count(/nc:netcdf/nc:attribute[@name='summary']) > 0">
@@ -2416,6 +2661,7 @@
               </xsl:call-template>
             </xsl:when>
             <xsl:otherwise>
+
               <xsl:call-template name="writeCharacterString">
                 <xsl:with-param name="testValue" select="$summaryCnt"/>
                 <xsl:with-param name="stringToWrite"
@@ -2427,6 +2673,7 @@
         </gmd:abstract>
         <srv:serviceType>
           <gco:LocalName>
+
             <xsl:value-of select="$serviceTypeName"/>
           </gco:LocalName>
         </srv:serviceType>
@@ -2436,6 +2683,7 @@
                   <gmd:EX_Extent>
                     <xsl:if test="$geospatial_lat_minCnt > 0">
                       <gmd:geographicElement>
+
                         <gmd:EX_GeographicBoundingBox>
                           <gmd:extentTypeCode>
                             <gco:Boolean>1</gco:Boolean>
@@ -2444,6 +2692,7 @@
                             <gco:Decimal>
                               <xsl:choose>
                                 <xsl:when test="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lon_min']">
+
                                   <xsl:value-of select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lon_min']/@value" />
                                 </xsl:when>
                                 <xsl:otherwise>
@@ -2453,6 +2702,7 @@
                                 </xsl:otherwise>
                               </xsl:choose>
                             </gco:Decimal>
+
                           </gmd:westBoundLongitude>
                           <gmd:eastBoundLongitude>
                             <gco:Decimal>
@@ -2462,6 +2712,7 @@
                                 </xsl:when>
                                 <xsl:otherwise>
                                   <xsl:value-of select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lon_max']/@value" />
+
                                 </xsl:otherwise>
                               </xsl:choose>
                             </gco:Decimal>
@@ -2471,6 +2722,7 @@
                               <xsl:choose>
                                 <xsl:when test="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_min']">
                                   <xsl:value-of select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_min']/@value" />
+
                                 </xsl:when>
                                 <xsl:otherwise>
                                   <xsl:value-of select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_lat_min']/@value" />
@@ -2480,6 +2732,7 @@
                           </gmd:southBoundLatitude>
                           <gmd:northBoundLatitude>
                             <gco:Decimal>
+
                               <xsl:choose>
                                 <xsl:when test="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_max']">
                                   <xsl:value-of select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_max']/@value" />
@@ -2489,6 +2742,7 @@
                                 </xsl:otherwise>
                               </xsl:choose> 
                             </gco:Decimal>
+
                           </gmd:northBoundLatitude>
                         </gmd:EX_GeographicBoundingBox>
                       </gmd:geographicElement>
@@ -2498,6 +2752,7 @@
                         <gmd:EX_TemporalExtent>
                           <gmd:extent>
                             <gml:TimePeriod>
+
                               <xsl:attribute name="gml:id">
                                 <xsl:value-of select="concat($serviceID,'_time_period')" />
                               </xsl:attribute>
@@ -2507,6 +2762,7 @@
                                     <xsl:value-of select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_start']/@value" />
                                   </xsl:when>
                                   <xsl:otherwise>
+
                                     <xsl:value-of select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='time_coverage_start']/@value" />
                                   </xsl:otherwise>
                                 </xsl:choose> 
@@ -2516,6 +2772,7 @@
                                   <xsl:when test="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_end']">
                                     <xsl:value-of select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_end']/@value" />
                                   </xsl:when>
+
                                   <xsl:otherwise>
                                     <xsl:value-of select="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='time_coverage_end']/@value" />
                                   </xsl:otherwise>
@@ -2526,6 +2783,7 @@
                           
                         </gmd:EX_TemporalExtent>
                       </gmd:temporalElement>
+
                     </xsl:if>
                     <xsl:if test="$vertical_minCnt > 0">
                       <gmd:verticalElement>
@@ -2536,6 +2794,7 @@
                                 <xsl:when
                                   test="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_positive']">
                                   <xsl:choose>
+
                                     <xsl:when
                                       test="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_positive']/@value = 'down'">
                                       <xsl:value-of
@@ -2550,6 +2809,7 @@
                                   </xsl:choose>
                                 </xsl:when>
                                 <xsl:otherwise>
+
                                   <xsl:choose>
                                     <xsl:when
                                       test="/nc:netcdf/nc:group[@name='THREDDSMetadata']//nc:attribute[@name='geospatial_vertical_positive']/@value = 'down'">
@@ -2564,6 +2824,7 @@
                                     </xsl:otherwise>
                                   </xsl:choose>
                                 </xsl:otherwise>
+
                               </xsl:choose>
                             </gco:Real>
                           </gmd:minimumValue>
@@ -2575,6 +2836,7 @@
                                   <xsl:choose>
                                     <xsl:when
                                       test="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_positive']/@value = 'down'">
+
                                       <xsl:value-of
                                         select="/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_max']/@value * -1"
                                       />
@@ -2588,6 +2850,7 @@
                                 </xsl:when>
                                 <xsl:otherwise>
                                   <xsl:choose>
+
                                     <xsl:when
                                       test="/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_vertical_positive']/@value = 'down'">
                                       <xsl:value-of
@@ -2602,6 +2865,7 @@
                                   </xsl:choose>
                                 </xsl:otherwise>
                               </xsl:choose>
+
                             </gco:Real>
                           </gmd:maximumValue>
                           <gmd:verticalCRS>
@@ -2611,6 +2875,7 @@
                           </gmd:verticalCRS>
                         </gmd:EX_VerticalExtent>
                       </gmd:verticalElement>
+
                     </xsl:if>
                   </gmd:EX_Extent>
                 </xsl:when>
@@ -2620,6 +2885,7 @@
                   </xsl:attribute>
                 </xsl:otherwise>
               </xsl:choose>
+
         </srv:extent>
         <srv:couplingType>
           <srv:SV_CouplingType
@@ -2630,6 +2896,7 @@
           <srv:SV_OperationMetadata>
             <srv:operationName>
               <gco:CharacterString>
+
                 <xsl:value-of select="$serviceOperationName"/>
               </gco:CharacterString>
             </srv:operationName>
@@ -2639,6 +2906,7 @@
                 <gmd:linkage>
                   <gmd:URL>
                     <xsl:value-of select="$operationURL"/>
+
                   </gmd:URL>
                 </gmd:linkage>
                 <gmd:name>
@@ -2648,6 +2916,7 @@
                 </gmd:name>
                 <gmd:description>
                   <gco:CharacterString>
+
                     <xsl:value-of select="$serviceTypeName"/>
                   </gco:CharacterString>
                 </gmd:description>
@@ -2658,6 +2927,7 @@
                 </gmd:function>
               </gmd:CI_OnlineResource>
             </srv:connectPoint>
+
           </srv:SV_OperationMetadata>
         </srv:containsOperations>
         <srv:operatesOn xlink:href="#DataIdentification"/>
