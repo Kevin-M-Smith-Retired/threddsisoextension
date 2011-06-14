@@ -151,25 +151,27 @@ public class NCMLModifier {
 	        String urlString = a.getStandardUrlName();
 
 	        String fullUrlString = urlString;
-	          ServiceType stype = s.getServiceType();
-	          _log.debug("THREDDS service type=" + stype);
-	          if ((stype == ServiceType.OPENDAP) || (stype == ServiceType.DODS)) {
-	            fullUrlString = fullUrlString + ".html";
+	        ServiceType stype = s.getServiceType();
+	        _log.debug("THREDDS service type=" + stype);
+	        if ((stype == ServiceType.OPENDAP) || (stype == ServiceType.DODS)) {
 	            addElem(servicesGrp, "opendap_service", fullUrlString);	             
 	       	    _openDapService = fullUrlString;
-	          } else if (stype == ServiceType.WCS) {
+	        } else if (stype == ServiceType.WCS) {
 	            fullUrlString = fullUrlString + "?service=WCS&version=1.0.0&request=GetCapabilities";
 	            addElem(servicesGrp, "wcs_service", fullUrlString);
-	          } else if (stype == ServiceType.WMS) {
+	        } else if (stype == ServiceType.WMS) {
 	            fullUrlString = fullUrlString + "?service=WMS&version=1.3.0&request=GetCapabilities";
 	            addElem(servicesGrp, "wms_service", fullUrlString);
-	          } else if (stype == ServiceType.NetcdfSubset) {
+	        } else if (stype == ServiceType.NetcdfSubset) {
 	            fullUrlString = fullUrlString + "/dataset.html";
 	            addElem(servicesGrp, "nccs_service", fullUrlString);	          
-	          } else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature)) {
+	        } else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature)) {
 	            fullUrlString = fullUrlString + "?req=form";
 	            addElem(servicesGrp, "cdmremote_service", fullUrlString);
-	          }
+	        } else if (stype.toString().equals("SOS")) {
+	            fullUrlString = fullUrlString + "?service=SOS&version=1.0.0&request=GetCapabilities";
+	            addElem(servicesGrp, "sos_service", fullUrlString);
+	        }
 	      }	      	    
 	    }
 	        

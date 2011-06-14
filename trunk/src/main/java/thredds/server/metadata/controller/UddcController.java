@@ -94,22 +94,28 @@ public class UddcController extends AbstractMetadataController {
 
 		try {
 			isAllowed(_allow, _metadataServiceType, res);
-			netCdfDataset = DatasetHandlerAdapter.openDataset(req, res);
 			res.setContentType("text/html");
-			Writer writer = new StringWriter();
-			//Get Thredds level metadata if it exists
-			InvDataset ids = this.getThreddsDataset(req);	
-			
-			EnhancedMetadataService.enhance(netCdfDataset, ids, writer);
-			String ncml = writer.toString();
-			writer.flush();
-			writer.close();
-			InputStream is = new ByteArrayInputStream(ncml.getBytes("UTF-8"));
-			
-			ThreddsTranslatorUtil.transform("UnidataDDCount-HTML.xsl",
-					is, res.getWriter());
-			
-			res.getWriter().flush();
+			netCdfDataset = DatasetHandlerAdapter.openDataset(req, res);
+			if (netCdfDataset == null) {
+				res.sendError(HttpServletResponse.SC_NOT_FOUND,
+						"ThreddsIso Extension: Requested resource not found.");
+			} else {
+				Writer writer = new StringWriter();
+				// Get Thredds level metadata if it exists
+				InvDataset ids = this.getThreddsDataset(req);
+
+				EnhancedMetadataService.enhance(netCdfDataset, ids, writer);
+				String ncml = writer.toString();
+				writer.flush();
+				writer.close();
+				InputStream is = new ByteArrayInputStream(
+						ncml.getBytes("UTF-8"));
+
+				ThreddsTranslatorUtil.transform("UnidataDDCount-HTML.xsl", is,
+						res.getWriter());
+
+				res.getWriter().flush();
+			}
 		} catch (ThreddsUtilitiesException tue) {
 			String errMsg = "Error in UDDCController: " + req.getQueryString();
 			_log.error(errMsg, tue);

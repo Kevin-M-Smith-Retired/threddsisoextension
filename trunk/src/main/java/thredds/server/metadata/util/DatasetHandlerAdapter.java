@@ -28,6 +28,7 @@
  */
 package thredds.server.metadata.util;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -64,9 +65,13 @@ public class DatasetHandlerAdapter {
 		if (datasetPath == null) { // passing in a dataset URL, presumably
 			// opendap
 			datasetPath = ServletUtil.getParameterIgnoreCase(req, "dataset");
-			_log.info("opendap datasetPath: " + datasetPath);
+			_log.debug("opendap datasetPath: " + datasetPath);
 			try {
 				dataset = NetcdfDataset.openDataset(datasetPath);
+				if (dataset == null) {
+					res.setStatus( HttpServletResponse.SC_NOT_FOUND );
+				    return null;
+			    }
 			} catch (IOException e) {
 				_log.error("Failed to open dataset <" + datasetPath + ">: "
 						+ e.getMessage());
@@ -77,11 +82,16 @@ public class DatasetHandlerAdapter {
 				netcdfFile = DatasetHandler
 						.getNetcdfFile(req, res, datasetPath);
 
-				_log.info("datasetPath: " + datasetPath + " netcdfFile location: " + netcdfFile.getLocation());
+				_log.debug("datasetPath: " + datasetPath + " netcdfFile location: " + netcdfFile.getLocation());
+		
 				dataset = new NetcdfDataset(netcdfFile);
-			} catch (IOException e) {
-				_log.error("Failed to open dataset <" + datasetPath + ">: "
-						+ e.getMessage());
+
+			} catch (FileNotFoundException fnfe) {
+				_log.error("Failed to get NetcdfFile <" + datasetPath + ">: "
+						+ fnfe.getMessage(),fnfe);
+			} catch (IOException ioe) {
+				_log.error("Failed to get NetcdfFile <" + datasetPath + "> using " + netcdfFile.getLocation() + ": "
+						+ ioe.getMessage(), ioe);
 			}
 		}
 		return dataset;

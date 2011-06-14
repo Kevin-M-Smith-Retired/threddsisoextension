@@ -63,7 +63,7 @@ public class ThreddsTranslatorUtil {
     private static final TransformerFactory transFact =  TransformerFactory.newInstance();
 
     private static InputStream getXSLT(String xslName) {
-    	return ThreddsTranslatorUtil.class.getResourceAsStream("/resources/xsl/" + xslName);
+    	return ThreddsTranslatorUtil.class.getResourceAsStream("/resources/xsl/nciso/" + xslName);
     }
     
     /**

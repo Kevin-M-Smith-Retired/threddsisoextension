@@ -96,17 +96,21 @@ public class NcmlController extends AbstractMetadataController {
 			isAllowed(_allow, _metadataServiceType, res);
 			res.setContentType("text/xml");
 			netCdfDataset = DatasetHandlerAdapter.openDataset(req, res);
-			
-			//Get the response writer
-			Writer writer = res.getWriter();
-			
-			//Get Thredds level metadata if it exists
-			InvDataset ids = this.getThreddsDataset(req);	
-			
-			//Enhance with file and dataset level metadata
-			EnhancedMetadataService.enhance(netCdfDataset, ids, writer);
-			writer.flush();
-			
+			if (netCdfDataset == null) {
+				res.sendError(HttpServletResponse.SC_NOT_FOUND,
+						"ThreddsIso Extension: Requested resource not found.");
+			} else {
+				// Get the response writer
+				Writer writer = res.getWriter();
+
+				// Get Thredds level metadata if it exists
+				InvDataset ids = this.getThreddsDataset(req);
+
+				// Enhance with file and dataset level metadata
+				EnhancedMetadataService.enhance(netCdfDataset, ids, writer);
+				writer.flush();
+			}
+
 		} catch (Exception e) {
 			String errMsg = "Error in " + _metadataServiceType + ": " + req.getQueryString();
 			_log.error(errMsg, e);
