@@ -92,25 +92,31 @@ public class IsoController extends AbstractMetadataController {
 
 		NetcdfDataset netCdfDataset = null;
 
-		try {			
-			isAllowed(_allow, _metadataServiceType, res);			
-			netCdfDataset = DatasetHandlerAdapter.openDataset(req, res);
+		try {
+			isAllowed(_allow, _metadataServiceType, res);
 			res.setContentType("text/xml");
-			Writer writer = new StringWriter();
-			//Get Thredds level metadata if it exists
-			InvDataset ids = this.getThreddsDataset(req);	
-			
-			//Enhance with file and dataset level metadata
-			EnhancedMetadataService.enhance(netCdfDataset, ids, writer);
-			
-			String ncml = writer.toString();
-			writer.flush();
-			writer.close();
-			InputStream is = new ByteArrayInputStream(ncml.getBytes("UTF-8"));
-			
-			ThreddsTranslatorUtil.transform("UnidataDD2MI.xsl", is, res
-					.getWriter());
-			res.getWriter().flush();
+			netCdfDataset = DatasetHandlerAdapter.openDataset(req, res);
+			if (netCdfDataset == null) {
+				res.sendError(HttpServletResponse.SC_NOT_FOUND,
+						"ThreddsIso Extension: Requested resource not found.");
+			} else {
+				Writer writer = new StringWriter();
+				// Get Thredds level metadata if it exists
+				InvDataset ids = this.getThreddsDataset(req);
+
+				// Enhance with file and dataset level metadata
+				EnhancedMetadataService.enhance(netCdfDataset, ids, writer);
+
+				String ncml = writer.toString();
+				writer.flush();
+				writer.close();
+				InputStream is = new ByteArrayInputStream(
+						ncml.getBytes("UTF-8"));
+
+				ThreddsTranslatorUtil.transform("UnidataDD2MI.xsl", is,
+						res.getWriter());
+				res.getWriter().flush();
+			}
 		} catch (ThreddsUtilitiesException tue) {
 			String errMsg = "Error in " + _metadataServiceType + ": " + req.getQueryString();
 			_log.error(errMsg, tue);
