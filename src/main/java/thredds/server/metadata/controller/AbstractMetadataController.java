@@ -12,6 +12,7 @@ import thredds.catalog.InvCatalog;
 import thredds.catalog.InvDataset;
 import thredds.servlet.DataRootHandler;
 
+
 public abstract class AbstractMetadataController implements IMetadataContoller {
 	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
     .getLogger(AbstractMetadataController.class);
@@ -57,30 +58,53 @@ public abstract class AbstractMetadataController implements IMetadataContoller {
     	
     	InvCatalog catalog = null;
     	InvDataset ids = null;
+        String catalogPath = null; 
+
         String catalogString = req.getParameter("catalog");
         String invDatasetString = req.getParameter("dataset");
-        String catalogPath = null; 
-        String catalogUri = null;
         
     	try
         {  
-    	  catalogPath = catalogString.substring(catalogString.lastIndexOf("/")+1,catalogString.length()-4)+"xml";	
-          catalogUri = catalogString.substring(0,catalogString.lastIndexOf("/"));
-    	  
-          _log.debug("ncISO catalogPath=" + catalogPath +"; " + "catalogUri=" +catalogUri + "; dataset=" + invDatasetString);
+    	 
           // Check for matching dataset and catalog.    
+          DataRootHandler drh = DataRootHandler.getInstance();            		
     	  
-    	  // Handle datasetScan
-          String catalogDatasetId = (invDatasetString.lastIndexOf("/")>-1) ? invDatasetString.substring(0,(invDatasetString.lastIndexOf("/"))) : invDatasetString;
-    	  DataRootHandler drh = DataRootHandler.getInstance();          
+          //Is the catalog generated dynamically by datasetScan?
+          String dynamicCatStr = "thredds/catalog/"; //datasetScans catalog hrefs always begin with thredds/catalog
+    	  String staticCatStr = "thredds/";
     	  
+    	  // Check to see if it's a static of dynamically generated catalog
+          if (catalogString.contains(dynamicCatStr)) {
+              catalogPath = catalogString.substring(catalogString.indexOf(dynamicCatStr)+dynamicCatStr.length(),catalogString.length()-4)+"xml";	
+          } else {
+        	  catalogPath = catalogString.substring(catalogString.indexOf(staticCatStr)+staticCatStr.length(),catalogString.length()-4)+"xml";
+          }
+
+          _log.debug("ncISO catalogPath=" + catalogPath +"; " + "dataset=" + invDatasetString + "; invDatasetString=" + invDatasetString);
+
+          //THESE WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    	  //catalogPath = "/crm/catalog.xml";
+    	  //catalogDatasetId = "crm/crm_vol1.nc";
+    	  //-----------------------------------------
+
           catalog = drh.getCatalog( catalogPath, new URI( catalogString ) );
           if (catalog==null) {
-        	  _log.debug("catalog is null.");
+        	  _log.error("catalog is not found using catalogPath: " + catalogPath + "; and catalogString: " + catalogString);
+        	  return null;
           } else {
-        	  _log.debug("catalog name: " + catalog.getName());
+        	  _log.debug("catalog found! catalog name: " + catalog.getName());
+        	  ids = (InvDataset) catalog.findDatasetByID(invDatasetString);        	 
           }
-          ids = (InvDataset) catalog.findDatasetByID(catalogDatasetId);
+          
+          
+          if (ids!=null) {
+              _log.debug("Dataset information retrieved!"
+              + ids.getCatalogUrl() + "; id=" + ids.getName());          
+          } else {
+              _log.debug("ids dataset not found!: " + invDatasetString);
+              return null;
+          }
+          
           if (ids.hasNestedDatasets()) {
         	  String nestedDataset = invDatasetString.substring((invDatasetString.lastIndexOf("/")+1), invDatasetString.length());
         	  //then look up the individual nested dataset using 
@@ -89,27 +113,18 @@ public abstract class AbstractMetadataController implements IMetadataContoller {
         	  return nds;
           }
           
-          if (ids!=null) {
-            _log.debug("Dataset information retrieved!"
-            + ids.getCatalogUrl() + "; id=" + ids.getName());          
-          } else {
-        	_log.debug("Dataset not found!: " + catalogDatasetId);
-          }
-        }
-    	catch ( NullPointerException npe) {
-    	    _log.error( "NullPointer - getTDSMetadata failed: ", npe );
-    	}
-        catch ( URISyntaxException e )
-        {
-          String msg = "Bad URI syntax [" + catalogString + "]: " + e.getMessage();
-            _log.error( msg + " getTDSMetadata failed: ", e );          
-        } catch ( Exception e )
-        {
+          return ids;
+        } catch ( URISyntaxException e ) {
+            String msg = "Bad URI syntax [" + catalogString + "]: " + e.getMessage();
+            _log.error( msg + " getTDSMetadata failed: ", e );   
+            return null;
+        } catch ( Exception e ) {
             String msg = e.getMessage();
-              _log.error( msg + " getTDSMetadata failed: ", e );          
+            _log.error( msg + " getTDSMetadata failed: ", e );
+            return null;
         } 
-        return ids;
         
-    }
+    }   
+    
 
 }
