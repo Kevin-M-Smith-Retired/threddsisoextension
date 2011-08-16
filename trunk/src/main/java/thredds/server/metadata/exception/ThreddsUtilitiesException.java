@@ -37,7 +37,12 @@ package thredds.server.metadata.exception;
  */
 public class ThreddsUtilitiesException extends Exception {
 
-    public enum EXCEPTION_TYPES{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2540208032117536453L;
+
+	public enum EXCEPTION_TYPES{
         IO_EXCEPTION,
         SAX_EXCEPTION, 
         TRANSFORMER_EXCEPTION, 
