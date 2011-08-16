@@ -73,7 +73,7 @@ public abstract class AbstractMetadataController implements IMetadataContoller {
           String dynamicCatStr = "thredds/catalog/"; //datasetScans catalog hrefs always begin with thredds/catalog
     	  String staticCatStr = "thredds/";
     	  
-    	  // Check to see if it's a static of dynamically generated catalog
+    	  // Check to see if it's a static or dynamically generated catalog
           if (catalogString.contains(dynamicCatStr)) {
               catalogPath = catalogString.substring(catalogString.indexOf(dynamicCatStr)+dynamicCatStr.length(),catalogString.length()-4)+"xml";	
           } else {
@@ -81,11 +81,6 @@ public abstract class AbstractMetadataController implements IMetadataContoller {
           }
 
           _log.debug("ncISO catalogPath=" + catalogPath +"; " + "dataset=" + invDatasetString + "; invDatasetString=" + invDatasetString);
-
-          //THESE WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    	  //catalogPath = "/crm/catalog.xml";
-    	  //catalogDatasetId = "crm/crm_vol1.nc";
-    	  //-----------------------------------------
 
           catalog = drh.getCatalog( catalogPath, new URI( catalogString ) );
           if (catalog==null) {
