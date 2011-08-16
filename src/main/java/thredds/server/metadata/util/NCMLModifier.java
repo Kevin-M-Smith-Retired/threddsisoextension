@@ -131,13 +131,11 @@ public class NCMLModifier {
 	        String type = (doc.getType() == null) ? "" : StringUtil.quoteXmlContent(doc.getType());
 	        String inline = doc.getInlineContent();
 	        String xlink = null;
-	        String xlinkTitle = null;
 	        if ((inline != null) && (inline.length() > 0))
 	          inline = StringUtil.quoteXmlContent(inline);
 	          addElem(docGrp, "inline", inline, type);	
 	        if (doc.hasXlink()) {
 	          xlink = doc.getXlinkHref();
-	          xlinkTitle = doc.getXlinkTitle();
 	          addElem(docGrp, "xlink", xlink, type);
 	        }
 	      }

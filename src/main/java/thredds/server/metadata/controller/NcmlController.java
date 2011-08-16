@@ -35,18 +35,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
-import thredds.catalog.InvCatalog;
 import thredds.catalog.InvDataset;
-import thredds.catalog.InvDatasetImpl;
 import thredds.server.metadata.service.EnhancedMetadataService;
 import thredds.server.metadata.util.DatasetHandlerAdapter;
-import thredds.servlet.DataRootHandler;
 import thredds.servlet.ThreddsConfig;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import ucar.nc2.dataset.NetcdfDataset;
 
