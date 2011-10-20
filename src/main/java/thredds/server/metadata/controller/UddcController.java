@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import thredds.catalog.InvDataset;
@@ -43,6 +44,7 @@ import thredds.server.metadata.util.ThreddsTranslatorUtil;
 import thredds.servlet.ThreddsConfig;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -59,17 +61,19 @@ import ucar.nc2.dataset.NetcdfDataset;
 @RequestMapping("/uddc")
 public class UddcController extends AbstractMetadataController {
 	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
-	    .getLogger(UddcController.class);
+		    .getLogger(UddcController.class);
 
 	protected String getPath() {
 		return _metadataServiceType + "/";
 	}
-
+	
 	public void init() throws ServletException {
 		_metadataServiceType = "UDDC";
 		_logServerStartup.info("Metadata UDDC - initialization start");
 		_allow = ThreddsConfig.getBoolean("NCISO.uddcAllow", false);
-	    _logServerStartup.info("NCISO.uddcAllow= " + _allow);		
+	    _logServerStartup.info("NCISO.uddcAllow = " + _allow);		
+		String ncIsoXslFilePath = super.sc.getRealPath("/WEB-INF/classes/resources/xsl/nciso") + "/UnidataDDCount-HTML.xsl";		  
+		xslFile = new File(ncIsoXslFilePath); 		    
 	}
 
 	public void destroy() {
@@ -108,12 +112,13 @@ public class UddcController extends AbstractMetadataController {
 				String ncml = writer.toString();
 				writer.flush();
 				writer.close();
+				
+				
 				InputStream is = new ByteArrayInputStream(
 						ncml.getBytes("UTF-8"));
-
-				ThreddsTranslatorUtil.transform("UnidataDDCount-HTML.xsl", is,
-						res.getWriter());
-
+			
+				ThreddsTranslatorUtil.transform(xslFile, is, res.getWriter());
+				
 				res.getWriter().flush();
 			}
 		} catch (ThreddsUtilitiesException tue) {
@@ -129,6 +134,5 @@ public class UddcController extends AbstractMetadataController {
 			DatasetHandlerAdapter.closeDataset(netCdfDataset);
 		}
 	}
-	
 
 }

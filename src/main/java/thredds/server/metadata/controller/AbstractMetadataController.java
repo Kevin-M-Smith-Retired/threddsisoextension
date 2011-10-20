@@ -1,19 +1,23 @@
 package thredds.server.metadata.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.context.ServletContextAware;
 
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvDataset;
 import thredds.servlet.DataRootHandler;
 
 
-public abstract class AbstractMetadataController implements IMetadataContoller {
+public abstract class AbstractMetadataController implements ServletContextAware, IMetadataContoller {
 	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
     .getLogger(AbstractMetadataController.class);
 	
@@ -21,7 +25,14 @@ public abstract class AbstractMetadataController implements IMetadataContoller {
 	.getLogger("serverStartup");
 
     protected boolean _allow = false;	
-    protected String _metadataServiceType = ""; 
+    protected String _metadataServiceType = "";
+
+	protected ServletContext sc; 
+	protected File xslFile;
+
+	public void setServletContext(ServletContext sc) {
+		this.sc = sc;		
+	}
 
 	protected void isAllowed(final boolean allow, final String metadataServiceType, final HttpServletResponse res) throws Exception {
 	    // Check whether TDS is configured to support service.
@@ -73,11 +84,13 @@ public abstract class AbstractMetadataController implements IMetadataContoller {
           String dynamicCatStr = "thredds/catalog/"; //datasetScans catalog hrefs always begin with thredds/catalog
     	  String staticCatStr = "thredds/";
     	  
+    	  if (catalogString.contains(".html")) catalogString = catalogString.substring(0,catalogString.length()-4) + "xml";
+    	  
     	  // Check to see if it's a static or dynamically generated catalog
           if (catalogString.contains(dynamicCatStr)) {
-              catalogPath = catalogString.substring(catalogString.indexOf(dynamicCatStr)+dynamicCatStr.length(),catalogString.length()-4)+"xml";	
+              catalogPath = catalogString.substring(catalogString.indexOf(dynamicCatStr)+dynamicCatStr.length(),catalogString.length());	
           } else {
-        	  catalogPath = catalogString.substring(catalogString.indexOf(staticCatStr)+staticCatStr.length(),catalogString.length()-4)+"xml";
+        	  catalogPath = catalogString.substring(catalogString.indexOf(staticCatStr)+staticCatStr.length(),catalogString.length());
           }
 
           _log.debug("ncISO catalogPath=" + catalogPath +"; " + "dataset=" + invDatasetString + "; invDatasetString=" + invDatasetString);

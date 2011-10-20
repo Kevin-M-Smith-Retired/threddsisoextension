@@ -34,6 +34,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.ServletUtil;
 import ucar.nc2.NetcdfFile;
@@ -45,8 +47,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 * Date: Jul 19, 2010
 */
 public class DatasetHandlerAdapter {
-	private static org.slf4j.Logger _log = org.slf4j.LoggerFactory
-        .getLogger(DatasetHandlerAdapter.class);
+	private static Logger _log = Logger.getLogger(DatasetHandlerAdapter.class);
 
 	/**
 	* Open a NetcdfDataset based on the incoming url request.

@@ -4,7 +4,7 @@
   <groupId>EDS</groupId>
   <artifactId>threddsIso</artifactId>
   <packaging>jar</packaging>
-  <version>1.2.4</version>
+  <version>2.0</version>
   <repositories>
     	
         <repository>
@@ -88,29 +88,20 @@
 		<version>1.1</version>
 		<scope>provided</scope>
 	</dependency>
-    <!-- The most recent xslts are much smaller meaning that Xalan 2.7.1 is not currently needed  
-         However, allowing for flexibility that they may grow in size again we leave them in the pom for now.   
-    <dependency>
-        <groupId>org.xalan</groupId>
-        <artifactId>serializer</artifactId>
-        <version>2.7.1</version>
-		<scope>runtime</scope>            
-    </dependency> 
-    <dependency>
-        <groupId>org.xalan</groupId>
-        <artifactId>xalan</artifactId>
-        <version>2.7.1</version>
-		<scope>compile</scope>            
-    </dependency> --> 
-    
+ 	<dependency>
+        <groupId>net.sf.saxon</groupId>
+        <artifactId>saxon-he</artifactId>
+        <version>9.3.0.5</version>
+        <type>jar</type>
+        <scope>provided</scope>
+    </dependency>    
 	<dependency>
 		<groupId>jaxen</groupId>
 		<artifactId>jaxen</artifactId>
 		<version>1.1.1</version>
 		<type>jar</type>
 		<scope>provided</scope>
-	</dependency>		
-  	
+	</dependency>		  	
 	<dependency>  	
 		<groupId>edu.ucar.unidata.dependencies</groupId>
 		<artifactId>slf4j-api</artifactId>
