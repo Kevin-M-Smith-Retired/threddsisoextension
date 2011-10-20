@@ -43,10 +43,12 @@ import thredds.server.metadata.util.ThreddsTranslatorUtil;
 import thredds.servlet.ThreddsConfig;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+
 
 import ucar.nc2.dataset.NetcdfDataset;
 
@@ -64,12 +66,14 @@ public class IsoController extends AbstractMetadataController {
 	protected String getPath() {
 		return _metadataServiceType + "/";
 	}
-
+	
 	public void init() throws ServletException {
 		_metadataServiceType = "ISO"; 
 		_logServerStartup.info("Metadata ISO - initialization start");
 		_allow = ThreddsConfig.getBoolean("NCISO.isoAllow", false);
-	    _logServerStartup.info("NCISO.isoAllow= "+ _allow);		
+	    _logServerStartup.info("NCISO.isoAllow = "+ _allow);	
+		String ncIsoXslFilePath = super.sc.getRealPath("/WEB-INF/classes/resources/xsl/nciso") + "/UnidataDD2MI.xsl";		  
+		xslFile = new File(ncIsoXslFilePath); 	
 	}
 
 	public void destroy() {
@@ -112,9 +116,8 @@ public class IsoController extends AbstractMetadataController {
 				writer.close();
 				InputStream is = new ByteArrayInputStream(
 						ncml.getBytes("UTF-8"));
-
-				ThreddsTranslatorUtil.transform("UnidataDD2MI.xsl", is,
-						res.getWriter());
+						
+				ThreddsTranslatorUtil.transform(xslFile, is, res.getWriter());
 				res.getWriter().flush();
 			}
 		} catch (ThreddsUtilitiesException tue) {

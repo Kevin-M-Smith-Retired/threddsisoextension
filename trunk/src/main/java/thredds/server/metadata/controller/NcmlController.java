@@ -64,7 +64,7 @@ public class NcmlController extends AbstractMetadataController {
 		_metadataServiceType = "NCML"; 
 		_logServerStartup.info("Metadata NCML - initialization start");
 		_allow = ThreddsConfig.getBoolean("NCISO.ncmlAllow", false);
-	    _logServerStartup.info("NCISO.ncmlAllow= "+ _allow);
+	    _logServerStartup.info("NCISO.ncmlAllow = "+ _allow);
 	}
 
 	public void destroy() {
