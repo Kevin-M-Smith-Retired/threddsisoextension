@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd"
+<xsl:stylesheet version="1.1" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd"
   xmlns:gmi="http://www.isotc211.org/2005/gmi" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gss="http://www.isotc211.org/2005/gss"
   xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:nc="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" exclude-result-prefixes="nc">
@@ -22,7 +22,6 @@
   <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
   <xsl:strip-space elements="*"/>
   <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
-
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
   <xsl:variable name="globalAttributeCnt" select="count(/nc:netcdf/nc:attribute)"/>
   <xsl:variable name="physicalMeasurementCnt" select="count(/nc:netcdf/nc:variable[not(contains(lower-case(@name),'_qc'))])"/>
@@ -33,7 +32,6 @@
   <!-- Identifier Fields: 4 possible -->
   <xsl:variable name="id" as="xs:string*" select="(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='id']/@value,
       /nc:netcdf/nc:attribute[@name='id']/@value)"/>
-
   <xsl:variable name="identifierNameSpace" as="xs:string*" select="(/nc:netcdf/nc:attribute[@name='naming_authority']/@value,
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='authority']/@value)"/>
   <xsl:variable name="metadataConvention" as="xs:string*" select="/nc:netcdf/nc:attribute[@name='Metadata_Conventions']/@value"/>
@@ -46,7 +44,6 @@
   <xsl:variable name="thredds_wcsCnt" select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='wcs_service'])"/>
   <xsl:variable name="thredds_wmsCnt" select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='wms_service'])"/>
   <xsl:variable name="thredds_sosCnt" select="count(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='services']/nc:attribute[@name='sos_service'])"/>
-
   <xsl:variable name="serviceTotal" select="$thredds_netcdfsubsetCnt + $thredds_opendapCnt + $thredds_wcsCnt + $thredds_wmsCnt + $thredds_sosCnt"/>
   <xsl:variable name="serviceMax">5</xsl:variable>
   <!-- Text Search Fields: 7 possible -->
@@ -60,7 +57,6 @@
   <xsl:variable name="keywordsVocabulary" as="xs:string*" select="(/nc:netcdf/nc:attribute[@name='keywords_vocabulary']/@value,
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='keywords']/nc:attribute[@name='vocab']/@value)"/>
   <xsl:variable name="stdNameVocabulary" as="xs:string*" select="(/nc:netcdf/nc:attribute[@name='standard_name_vocabulary']/@value)"/>
-
   <xsl:variable name="comment" as="xs:string*" select="(/nc:netcdf/nc:attribute[@name='comment']/@value,
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:document/nc:attribute[@type='comment']/@value)"/>
   <xsl:variable name="history" as="xs:string*" select="(/nc:netcdf/nc:attribute[@name='history']/@value,
@@ -90,7 +86,6 @@
     select="(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='time_coverage_end']/@value,
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='time_coverage_end']/@value,
     /nc:netcdf/nc:attribute[@name='time_coverage_end']/@value)"/>
-
   <xsl:variable name="timeStartCnt" select="count($timeStart)"/>
   <xsl:variable name="timeEndCnt" select="count($timeEnd)"/>
   <xsl:variable name="verticalMin" as="xs:string*"
@@ -101,15 +96,10 @@
     select="(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_max']/@value,
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='geospatial_vertical_max']/@value,
     /nc:netcdf/nc:attribute[@name='geospatial_vertical_max']/@value)"/>
-  <xsl:variable name="longitudeVariableName" select="//nc:variable[nc:attribute[@name='units' and @value='degrees_east']]/@name"/>
-  <xsl:variable name="latitudeVariableName" select="//nc:variable[nc:attribute[@name='units' and @value='degrees_north']]/@name"/>
-  <xsl:variable name="verticalVariableName" select="//nc:variable[nc:attribute[@name='positive' and (@value='up' or @value='down')]]/@name"/>
-  <xsl:variable name="timeVariableName" select="//nc:variable[nc:attribute[@name='standard_name' and lower-case(@value)='time']]/@name"/>
   <xsl:variable name="geospatial_lat_units" as="xs:string*"
     select="(//nc:variable[@name=$latitudeVariableName]/nc:attribute[@name='units']/@value,
     /nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_units']/@value,
     /nc:netcdf/nc:attribute[@name='geospatial_lat_units']/@value)"/>
-
   <xsl:variable name="geospatial_lon_units" as="xs:string*"
     select="(//nc:variable[@name=$longitudeVariableName]/nc:attribute[@name='units']/@value,
     /nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_lat_units']/@value,
@@ -133,6 +123,11 @@
     //nc:attribute[@name='geospatial_vertical_resolution']/@value)"/>
   <xsl:variable name="verticalPositive" as="xs:string*" select="(/nc:netcdf/nc:group[@name='CFMetadata']/nc:attribute[@name='geospatial_vertical_positive']/@value,
     /nc:netcdf/nc:attribute[@name='geospatial_vertical_positive']/@value)"/>
+  <!-- dimension variables -->
+  <xsl:variable name="longitudeVariableName" select="//nc:variable[nc:attribute[@name='units' and @value='degrees_east']]/@name"/>
+  <xsl:variable name="latitudeVariableName" select="//nc:variable[nc:attribute[@name='units' and @value='degrees_north']]/@name"/>
+  <xsl:variable name="verticalVariableName" select="//nc:variable[nc:attribute[@name='positive' and (@value='up' or @value='down')]]/@name"/>
+  <xsl:variable name="timeVariableName" select="//nc:variable[nc:attribute[@name='standard_name' and lower-case(@value)='time']]/@name"/>
 
   <!--  Extent Totals -->
   <xsl:variable name="extentTotal" select="count($geospatial_lat_min) + count($geospatial_lat_max) + count($geospatial_lon_min) + count($geospatial_lon_max) + count($timeStart) + count($timeEnd) + count($verticalMin) + count($verticalMax)"/>
@@ -147,7 +142,6 @@
   <xsl:variable name="creatorURL" as="xs:string*"
     select="(/nc:netcdf/nc:attribute[@name='creator_url']/@value,
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='creators']/nc:group[@name='creator']/nc:attribute[@name='url']/@value)"/>
-
   <xsl:variable name="creatorEmail" as="xs:string*"
     select="(/nc:netcdf/nc:attribute[@name='creator_email']/@value,
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='creators']/nc:group[@name='creator']/nc:attribute[@name='email']/@value)"/>
@@ -165,7 +159,6 @@
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='funding']/@value)"/>
   <xsl:variable name="dateCnt" select="count($creatorDate) + count($modifiedDate) + count($issuedDate)"/>
   <xsl:variable name="creatorTotal" select="count($creatorName) + count($creatorURL) + count($creatorEmail) + count($creatorDate) + count($modifiedDate) + count($issuedDate) + count($institution) + count($project) + count($acknowledgment)"/>
-
   <xsl:variable name="creatorMax">9</xsl:variable>
   <!--  -->
   <xsl:variable name="contributorName" as="xs:string*"
@@ -180,7 +173,6 @@
   <xsl:variable name="publisherName" as="xs:string*"
     select="(/nc:netcdf/nc:attribute[@name='publisher_name']/@value,
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='publishers']/nc:group[@name='publisher']/nc:attribute[@name='name']/@value)"/>
-
   <xsl:variable name="publisherURL" as="xs:string*"
     select="(/nc:netcdf/nc:attribute[@name='publisher_url']/@value,
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='publishers']/nc:group[@name='publisher']/nc:attribute[@name='url']/@value)"/>
