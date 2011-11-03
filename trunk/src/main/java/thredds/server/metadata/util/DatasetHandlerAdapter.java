@@ -69,12 +69,9 @@ public class DatasetHandlerAdapter {
 			_log.debug("opendap datasetPath: " + datasetPath);
 			try {
 				dataset = NetcdfDataset.openDataset(datasetPath);
-				if (dataset == null) {
-					res.setStatus( HttpServletResponse.SC_NOT_FOUND );
-				    return null;
-			    }
 			} catch (IOException e) {
-				_log.error("Failed to open dataset <" + datasetPath + ">: "
+				res.setStatus( HttpServletResponse.SC_NOT_FOUND );
+				_log.debug("Failed to open dataset <" + datasetPath + ">: "
 						+ e.getMessage());
 			}
 		} else {
@@ -88,10 +85,12 @@ public class DatasetHandlerAdapter {
 				dataset = new NetcdfDataset(netcdfFile);
 
 			} catch (FileNotFoundException fnfe) {
-				_log.error("Failed to get NetcdfFile <" + datasetPath + ">: "
+				res.setStatus( HttpServletResponse.SC_NOT_FOUND );
+				_log.debug("Failed to get NetcdfFile <" + datasetPath + ">: "
 						+ fnfe.getMessage(),fnfe);
 			} catch (IOException ioe) {
-				_log.error("Failed to get NetcdfFile <" + datasetPath + "> using " + netcdfFile.getLocation() + ": "
+				res.setStatus( HttpServletResponse.SC_NOT_FOUND );
+				_log.debug("Failed to get NetcdfFile <" + datasetPath + "> using " + netcdfFile.getLocation() + ": "
 						+ ioe.getMessage(), ioe);
 			}
 		}

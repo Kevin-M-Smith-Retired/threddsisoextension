@@ -77,16 +77,22 @@ public class ThreddsExtentUtil {
 					ext._minLat = coordAxis.getMinValue();
 					ext._maxLat = coordAxis.getMaxValue();
 					ext._latUnits = coordAxis.getUnitsString();
-					ext._latRes = ((coordAxis.getMaxValue() - coordAxis
-							.getMinValue()) / (coordAxis.getSize()-1));
+					ext._latRes = 0.0d;
+					if ((coordAxis.getSize()-1) > 0) {
+						ext._latRes = ((coordAxis.getMaxValue() - coordAxis
+								.getMinValue()) / (coordAxis.getSize()-1));
+					} 
 				}
 				if (coordAxis.getAxisType() == AxisType.Lon) {
 					//logAvailableMemory("Retrieving Lon coordAxis values");
 					ext._minLon = coordAxis.getMinValue();
 					ext._maxLon = coordAxis.getMaxValue();
 					ext._lonUnits = coordAxis.getUnitsString();
-					ext._lonRes = ((coordAxis.getMaxValue() - coordAxis
-							.getMinValue()) / (coordAxis.getSize()-1));
+					ext._lonRes = 0.0d;
+					if ((coordAxis.getSize()-1) > 0) {					
+						ext._lonRes = ((coordAxis.getMaxValue() - coordAxis
+								.getMinValue()) / (coordAxis.getSize()-1));
+					} 
 				}
 				if ((coordAxis.getAxisType() == AxisType.Time)&&(coordAxis.getFullName().equalsIgnoreCase("TIME"))) {
 					_log.info("numTimeElems=" + coordAxis.getSize());
@@ -114,7 +120,10 @@ public class ThreddsExtentUtil {
 					//System.out.println("duration in millisecs=" + duration);
 					//System.out.println("intervals =" + (coordAxis.getSize()-1));
 					//Revised resolution
-					double timeRes = (duration/1000) / (coordAxis.getSize()-1);				
+					double timeRes = 0.0d;
+					if ((coordAxis.getSize()-1) > 0) {								
+						timeRes = (duration/1000) / (coordAxis.getSize()-1);
+					} 
 					ext._timeRes = Double.toString(timeRes);
 					ext._timeUnits = "seconds";
 				}
@@ -126,8 +135,11 @@ public class ThreddsExtentUtil {
 					ext._maxHeight = coordAxis.getMaxValue();
 					ext._heightUnits = coordAxis.getUnitsString();
 					ext._vOrientation = coordAxis.getPositive();
-					ext._heightRes = ((coordAxis.getMaxValue() - coordAxis
-							.getMinValue()) / coordAxis.getSize());
+					ext._heightRes = 0.0d;
+					if ((coordAxis.getSize()-1) > 0) {	
+						ext._heightRes = ((coordAxis.getMaxValue() - coordAxis
+								.getMinValue()) / coordAxis.getSize()-1);
+					}
 				}
 
 			}
