@@ -59,9 +59,9 @@ import org.jdom.Namespace;
 * Date: Jun 6, 2010
 */
 public class NCMLModifier {
-	private static Logger logger = Logger.getLogger(NCMLModifier.class);
-	
+	private static Logger logger = Logger.getLogger(NCMLModifier.class);	
     private String _openDapService = null;
+    private String _version = "2.0.2";
     
    /** 
 	* Class constructor.
@@ -352,7 +352,8 @@ public class NCMLModifier {
 		Date dateStamp = Calendar.getInstance().getTime();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String metadata_creation_date = sdf.format(dateStamp);
-        addElem(groupElem,"metadata_creation", metadata_creation_date);      
+        addElem(groupElem,"metadata_creation", metadata_creation_date);
+        addElem(groupElem,"nciso_version", _version); 
 	}
 	
 	private Element newGroupElement() {
