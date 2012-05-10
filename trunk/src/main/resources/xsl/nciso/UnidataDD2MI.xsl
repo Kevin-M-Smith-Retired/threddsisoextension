@@ -16,7 +16,7 @@
       <xd:p/>
     </xd:desc>
   </xd:doc>
-  <xsl:variable name="stylesheetVersion" select="'2.21'"/>
+  <xsl:variable name="stylesheetVersion" select="'2.22'"/>
   <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
   <xsl:strip-space elements="*"/>
   <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
@@ -190,7 +190,7 @@
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='processing_level']/@value)"/>
   <xsl:variable name="license" as="xs:string*"
     select="(/nc:netcdf/nc:attribute[@name='license']/@value,
-    /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='rights'])"/>
+    /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:group[@name='documentation']/nc:group[@name='document']/nc:attribute[@type='rights']/@value)"/>
   <xsl:variable name="otherTotal" select="count($cdmType) + count($processingLevel) + count($license)"/>
   <xsl:variable name="otherMax">3</xsl:variable>
   <xsl:variable name="spiralTotal" select="$extentTotal + $otherExtentTotal + $otherTotal + $responsiblePartyTotal"/>
@@ -210,26 +210,26 @@
       </gmd:fileIdentifier>
       <gmd:language>
         <xsl:call-template name="writeCodelist">
-          <xsl:with-param name="codeListName" select="'gmd:LanguageCode'"/>
+          <xsl:with-param name="codeListName" select="'LanguageCode'"/>
           <xsl:with-param name="codeListValue" select="'eng'"/>
         </xsl:call-template>
       </gmd:language>
       <gmd:characterSet>
         <xsl:call-template name="writeCodelist">
-          <xsl:with-param name="codeListName" select="'gmd:MD_CharacterSetCode'"/>
+          <xsl:with-param name="codeListName" select="'MD_CharacterSetCode'"/>
           <xsl:with-param name="codeListValue" select="'UTF8'"/>
         </xsl:call-template>
       </gmd:characterSet>
       <gmd:hierarchyLevel>
         <xsl:call-template name="writeCodelist">
-          <xsl:with-param name="codeListName" select="'gmd:MD_ScopeCode'"/>
+          <xsl:with-param name="codeListName" select="'MD_ScopeCode'"/>
           <xsl:with-param name="codeListValue" select="'dataset'"/>
         </xsl:call-template>
       </gmd:hierarchyLevel>
       <xsl:if test="$serviceTotal">
         <gmd:hierarchyLevel>
           <xsl:call-template name="writeCodelist">
-            <xsl:with-param name="codeListName" select="'gmd:MD_ScopeCode'"/>
+            <xsl:with-param name="codeListName" select="'MD_ScopeCode'"/>
             <xsl:with-param name="codeListValue" select="'service'"/>
           </xsl:call-template>
         </gmd:hierarchyLevel>
@@ -298,7 +298,7 @@
               </xsl:if>
               <gmd:cellGeometry>
                 <xsl:call-template name="writeCodelist">
-                  <xsl:with-param name="codeListName" select="'gmd:MD_CellGeometryCode'"/>
+                  <xsl:with-param name="codeListName" select="'MD_CellGeometryCode'"/>
                   <xsl:with-param name="codeListValue" select="'area'"/>
                 </xsl:call-template>
               </gmd:cellGeometry>
@@ -463,7 +463,7 @@
                 </xsl:for-each>
                 <gmd:type>
                   <xsl:call-template name="writeCodelist">
-                    <xsl:with-param name="codeListName" select="'gmd:MD_KeywordTypeCode'"/>
+                    <xsl:with-param name="codeListName" select="'MD_KeywordTypeCode'"/>
                     <xsl:with-param name="codeListValue" select="'theme'"/>
                   </xsl:call-template>
                 </gmd:type>
@@ -494,7 +494,7 @@
                 </gmd:keyword>
                 <gmd:type>
                   <xsl:call-template name="writeCodelist">
-                    <xsl:with-param name="codeListName" select="'gmd:MD_KeywordTypeCode'"/>
+                    <xsl:with-param name="codeListName" select="'MD_KeywordTypeCode'"/>
                     <xsl:with-param name="codeListValue" select="'project'"/>
                   </xsl:call-template>
                 </gmd:type>
@@ -516,7 +516,7 @@
                 </gmd:keyword>
                 <gmd:type>
                   <xsl:call-template name="writeCodelist">
-                    <xsl:with-param name="codeListName" select="'gmd:MD_KeywordTypeCode'"/>
+                    <xsl:with-param name="codeListName" select="'MD_KeywordTypeCode'"/>
                     <xsl:with-param name="codeListValue" select="'dataCenter'"/>
                   </xsl:call-template>
                 </gmd:type>
@@ -540,7 +540,7 @@
                 </xsl:for-each>
                 <gmd:type>
                   <xsl:call-template name="writeCodelist">
-                    <xsl:with-param name="codeListName" select="'gmd:MD_KeywordTypeCode'"/>
+                    <xsl:with-param name="codeListName" select="'MD_KeywordTypeCode'"/>
                     <xsl:with-param name="codeListValue" select="'theme'"/>
                   </xsl:call-template>
                 </gmd:type>
@@ -583,13 +583,13 @@
                 </gmd:aggregateDataSetName>
                 <gmd:associationType>
                   <xsl:call-template name="writeCodelist">
-                    <xsl:with-param name="codeListName" select="'gmd:DS_AssociationTypeCode'"/>
+                    <xsl:with-param name="codeListName" select="'DS_AssociationTypeCode'"/>
                     <xsl:with-param name="codeListValue" select="'largerWorkCitation'"/>
                   </xsl:call-template>
                 </gmd:associationType>
                 <gmd:initiativeType>
                   <xsl:call-template name="writeCodelist">
-                    <xsl:with-param name="codeListName" select="'gmd:DS_InitiativeTypeCode'"/>
+                    <xsl:with-param name="codeListName" select="'DS_InitiativeTypeCode'"/>
                     <xsl:with-param name="codeListValue" select="'project'"/>
                   </xsl:call-template>
                 </gmd:initiativeType>
@@ -618,13 +618,13 @@
                 </gmd:aggregateDataSetIdentifier>
                 <gmd:associationType>
                   <xsl:call-template name="writeCodelist">
-                    <xsl:with-param name="codeListName" select="'gmd:DS_AssociationTypeCode'"/>
+                    <xsl:with-param name="codeListName" select="'DS_AssociationTypeCode'"/>
                     <xsl:with-param name="codeListValue" select="'largerWorkCitation'"/>
                   </xsl:call-template>
                 </gmd:associationType>
                 <gmd:initiativeType>
                   <xsl:call-template name="writeCodelist">
-                    <xsl:with-param name="codeListName" select="'gmd:DS_InitiativeTypeCode'"/>
+                    <xsl:with-param name="codeListName" select="'DS_InitiativeTypeCode'"/>
                     <xsl:with-param name="codeListValue" select="'project'"/>
                   </xsl:call-template>
                 </gmd:initiativeType>
@@ -796,7 +796,7 @@
             </gmd:attributeDescription>
             <gmd:contentType>
               <xsl:call-template name="writeCodelist">
-                <xsl:with-param name="codeListName" select="'gmd:MD_CoverageContentTypeCode'"/>
+                <xsl:with-param name="codeListName" select="'MD_CoverageContentTypeCode'"/>
                 <xsl:with-param name="codeListValue" select="'physicalMeasurement'"/>
               </xsl:call-template>
             </gmd:contentType>
@@ -835,7 +835,7 @@
             </gmd:attributeDescription>
             <gmd:contentType>
               <xsl:call-template name="writeCodelist">
-                <xsl:with-param name="codeListName" select="'gmd:MD_CoverageContentTypeCode'"/>
+                <xsl:with-param name="codeListName" select="'MD_CoverageContentTypeCode'"/>
                 <xsl:with-param name="codeListValue" select="'qualityInformation'"/>
               </xsl:call-template>
             </gmd:contentType>
@@ -957,7 +957,7 @@
               <gmd:DQ_Scope>
                 <gmd:level>
                   <xsl:call-template name="writeCodelist">
-                    <xsl:with-param name="codeListName" select="'gmd:MD_ScopeCode'"/>
+                    <xsl:with-param name="codeListName" select="'MD_ScopeCode'"/>
                     <xsl:with-param name="codeListValue" select="'dataset'"/>
                   </xsl:call-template>
                 </gmd:level>
@@ -1032,7 +1032,7 @@
               </gmd:date>
               <gmd:dateType>
                 <xsl:call-template name="writeCodelist">
-                  <xsl:with-param name="codeListName" select="'gmd:CI_DateTypeCode'"/>
+                  <xsl:with-param name="codeListName" select="'CI_DateTypeCode'"/>
                   <xsl:with-param name="codeListValue" select="$dateType"/>
                 </xsl:call-template>
               </gmd:dateType>
@@ -1049,7 +1049,7 @@
               </gmd:date>
               <gmd:dateType>
                 <xsl:call-template name="writeCodelist">
-                  <xsl:with-param name="codeListName" select="'gmd:CI_DateTypeCode'"/>
+                  <xsl:with-param name="codeListName" select="'CI_DateTypeCode'"/>
                   <xsl:with-param name="codeListValue" select="$dateType"/>
                 </xsl:call-template>
               </gmd:dateType>
@@ -1124,7 +1124,7 @@
                           </gmd:description>
                           <gmd:function>
                             <xsl:call-template name="writeCodelist">
-                              <xsl:with-param name="codeListName" select="'gmd:CI_OnLineFunctionCode'"/>
+                              <xsl:with-param name="codeListName" select="'CI_OnLineFunctionCode'"/>
                               <xsl:with-param name="codeListValue" select="'information'"/>
                             </xsl:call-template>
                           </gmd:function>
@@ -1142,7 +1142,7 @@
             </gmd:contactInfo>
             <gmd:role>
               <xsl:call-template name="writeCodelist">
-                <xsl:with-param name="codeListName" select="'gmd:CI_RoleCode'"/>
+                <xsl:with-param name="codeListName" select="'CI_RoleCode'"/>
                 <xsl:with-param name="codeListValue" select="$roleCode"/>
               </xsl:call-template>
             </gmd:role>
@@ -1150,7 +1150,9 @@
         </xsl:element>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:element name="{$tagName}"><xsl:attribute name="gco:nilReason">missing</xsl:attribute></xsl:element>
+        <xsl:element name="{$tagName}">
+          <xsl:attribute name="gco:nilReason">missing</xsl:attribute>
+        </xsl:element>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -1169,7 +1171,7 @@
         </xsl:if>
         <gmd:dimensionName>
           <xsl:call-template name="writeCodelist">
-            <xsl:with-param name="codeListName" select="'gmd:MD_DimensionNameTypeCode'"/>
+            <xsl:with-param name="codeListName" select="'MD_DimensionNameTypeCode'"/>
             <xsl:with-param name="codeListValue" select="$dimensionType"/>
           </xsl:call-template>
         </gmd:dimensionName>
@@ -1275,12 +1277,14 @@
             </xsl:with-param>
           </xsl:call-template>
         </gmd:descriptor>
-        <gmd:units>
-          <xsl:attribute name="xlink:href">
-            <xsl:value-of select="'http://someUnitsDictionary.xml#'"/>
-            <xsl:value-of select="$variableUnits"/>
-          </xsl:attribute>
-        </gmd:units>
+        <xsl:if test="$variableUnits">
+          <gmd:units>
+            <xsl:attribute name="xlink:href">
+              <xsl:value-of select="'http://example.org/someUnitsDictionary.xml#'"/>
+              <xsl:value-of select="encode-for-uri($variableUnits)"/>
+            </xsl:attribute>
+          </gmd:units>
+        </xsl:if>
       </gmd:MD_Band>
     </gmd:dimension>
   </xsl:template>
