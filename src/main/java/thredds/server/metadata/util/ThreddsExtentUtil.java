@@ -40,8 +40,10 @@ import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 
@@ -315,7 +317,7 @@ public class ThreddsExtentUtil {
 
 			}
 		} catch (Exception e) {
-			_log.error("Error in doGetExtent", e);
+			_log.error("Error in doGetExtentByAxis", e);
 		}
 
 		return ext;
@@ -343,7 +345,11 @@ public class ThreddsExtentUtil {
 	 * @throws ThreddsUtilitiesException
 	 */
 	public static Extent getExtent(final NetcdfDataset ncd) throws Exception {
-		return doGetExtent(ncd);
+		if (FeatureDatasetFactoryManager.findFeatureType(ncd) == FeatureType.ANY_POINT) {
+			return doGetExtent(ncd);
+		} else { // For now we assume most datasets are grids
+			return doGetExtentByAxis(ncd);
+		}
 	}
 
 	private static void logAvailableMemory(String message) {
