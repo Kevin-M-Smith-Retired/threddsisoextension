@@ -35,7 +35,6 @@ import org.apache.commons.lang.time.DurationFormatUtils;
 import org.apache.log4j.Logger;
 
 import thredds.server.metadata.bean.Extent;
-import thredds.server.metadata.exception.ThreddsUtilitiesException;
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
@@ -60,7 +59,7 @@ public class ThreddsExtentUtil {
 
 		try {
 			NetcdfDataset ncd = NetcdfDataset.openDataset(url);
-			ext = doGetExtent(ncd);
+			ext = getExtent(ncd);
 		} catch (Exception e) {
 			e.printStackTrace();
 			String err = "Could not load NETCDF file: " + url
@@ -330,7 +329,7 @@ public class ThreddsExtentUtil {
 	 *            The fully qualified path to the netCDF file. Url must point to
 	 *            a valid netCDF dataset.
 	 * @return a spatial extent object
-	 * @throws ThreddsUtilitiesException
+	 * @throws Exception
 	 */
 	public static Extent getExtent(final String url) throws Exception {
 		return doGetExtent(url);
@@ -342,12 +341,17 @@ public class ThreddsExtentUtil {
 	 * @param ncd
 	 *            a valid netCDF dataset.
 	 * @return a spatial extent object
-	 * @throws ThreddsUtilitiesException
+	 * @throws Exception
 	 */
 	public static Extent getExtent(final NetcdfDataset ncd) throws Exception {
-		if (FeatureDatasetFactoryManager.findFeatureType(ncd) == FeatureType.ANY_POINT) {
+		if (FeatureDatasetFactoryManager.findFeatureType(ncd) != null
+				&& FeatureDatasetFactoryManager.findFeatureType(ncd) != FeatureType.GRID) {
+			_log.info("FeatureType is not null && not a grid getting extent by reading arrays: "
+					+ FeatureDatasetFactoryManager.findFeatureType(ncd));
 			return doGetExtent(ncd);
 		} else { // For now we assume most datasets are grids
+			_log.info("FeatureType is null or a GRID getting extent from axes: "
+					+ FeatureDatasetFactoryManager.findFeatureType(ncd));
 			return doGetExtentByAxis(ncd);
 		}
 	}
