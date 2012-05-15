@@ -69,22 +69,27 @@ public class ThreddsExtentUtil {
 		return ext;
 	}
 
-	private static boolean geospatialCoord(Attribute att) {
+	private static boolean isLatCoord(Attribute att) {
 		if (att.getName().equals("standard_name")
 				&& (att.getStringValue().equals("latitude") || att
 						.getStringValue().equals("grid_latitude")))
 			return true;
 
 		if (att.getName().equals("units")
-				&& (att.getStringValue().equals("degrees_east") || att
-						.getStringValue().equals("degrees_north")))
+				&& (att.getStringValue().equals("degrees_north")))
 			return true;
 
+		return false;
+	}
+
+	private static boolean isLonCoord(Attribute att) {
 		if (att.getName().equals("standard_name")
 				&& (att.getStringValue().equals("longitude") || att
 						.getStringValue().equals("grid_longitude")))
 			return true;
-
+		if (att.getName().equals("units")
+				&& (att.getStringValue().equals("degrees_east")))
+			return true;
 		return false;
 	}
 
@@ -105,7 +110,7 @@ public class ThreddsExtentUtil {
 				List<Attribute> atts = var.getAttributes();
 				for (Attribute att : atts) {
 
-					if (geospatialCoord(att)) {
+					if (isLatCoord(att)) {
 						latUnits = var.getUnitsString();
 						Array vals = var.read();
 						long latSize = vals.getSize();
@@ -132,7 +137,7 @@ public class ThreddsExtentUtil {
 						}
 					}
 
-					if (geospatialCoord(att)) {
+					if (isLonCoord(att)) {
 						lonUnits = var.getUnitsString();
 						Array vals = var.read();
 						long lonSize = vals.getSize();
