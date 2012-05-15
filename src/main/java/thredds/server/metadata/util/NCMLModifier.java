@@ -61,7 +61,7 @@ import ucar.unidata.util.StringUtil;
 public class NCMLModifier {
 	private static Logger logger = Logger.getLogger(NCMLModifier.class);
 	private String _openDapService = null;
-	private String _version = "2.22";
+	private String _version = "2.2.2";
 
 	/**
 	 * Class constructor.
